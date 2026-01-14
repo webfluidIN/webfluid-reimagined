@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MessageCircle, Mail, Phone } from "lucide-react";
+import QuoteDialog from "@/components/QuoteDialog";
 
 const CTASection = () => {
   return (
@@ -38,13 +39,15 @@ const CTASection = () => {
 
           {/* CTA buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-            <Button
-              size="lg"
-              className="bg-white text-primary hover:bg-white/90 px-8 py-6 text-lg font-semibold group"
-            >
-              Start Your Project
-              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <QuoteDialog>
+              <Button
+                size="lg"
+                className="bg-white text-primary hover:bg-white/90 px-8 py-6 text-lg font-semibold group"
+              >
+                Start Your Project
+                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </QuoteDialog>
             <Button
               size="lg"
               variant="outline"
