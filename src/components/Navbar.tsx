@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
+import webfluidLogo from "@/assets/webfluid-logo.png";
 
 const navLinks = [
   { name: "Services", href: "#services" },
@@ -31,8 +32,8 @@ const Navbar = () => {
       <div className="container px-4">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <a href="#" className="text-2xl font-display font-bold">
-            Web<span className="gradient-text">fluid</span>
+          <a href="#" className="flex items-center">
+            <img src={webfluidLogo} alt="Webfluid" className="h-8 md:h-10 w-auto" />
           </a>
 
           {/* Desktop Navigation */}
