@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, ShoppingCart, Globe } from "lucide-react";
-
+import QuoteDialog from "@/components/QuoteDialog";
 const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background to-muted">
@@ -68,10 +68,12 @@ const HeroSection = () => {
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in" style={{ animationDelay: "0.4s" }}>
-            <Button size="lg" className="gradient-bg text-primary-foreground px-8 py-6 text-lg font-semibold hover:opacity-90 transition-opacity group">
-              Get Started
-              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <QuoteDialog>
+              <Button size="lg" className="gradient-bg text-primary-foreground px-8 py-6 text-lg font-semibold hover:opacity-90 transition-opacity group">
+                Get Started
+                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </QuoteDialog>
             <Button size="lg" variant="outline" className="px-8 py-6 text-lg font-semibold border-2 hover:bg-muted">
               View Our Work
             </Button>

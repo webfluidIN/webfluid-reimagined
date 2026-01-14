@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, ShoppingCart, Globe, Zap, HeadphonesIcon, CreditCard, Package } from "lucide-react";
+import QuoteDialog from "@/components/QuoteDialog";
 
 const ServicesSection = () => {
   const ecommerceFeatures = [
@@ -75,9 +76,11 @@ const ServicesSection = () => {
                 </p>
               </div>
 
-              <Button className="w-full gradient-bg text-primary-foreground py-6 text-lg font-semibold hover:opacity-90">
-                Start Your Store
-              </Button>
+              <QuoteDialog>
+                <Button className="w-full gradient-bg text-primary-foreground py-6 text-lg font-semibold hover:opacity-90">
+                  Start Your Store
+                </Button>
+              </QuoteDialog>
             </CardContent>
           </Card>
 
@@ -119,9 +122,11 @@ const ServicesSection = () => {
                 </p>
               </div>
 
-              <Button className="w-full bg-gradient-to-r from-accent to-brand-orange text-accent-foreground py-6 text-lg font-semibold hover:opacity-90">
-                Get Started
-              </Button>
+              <QuoteDialog>
+                <Button className="w-full bg-gradient-to-r from-accent to-brand-orange text-accent-foreground py-6 text-lg font-semibold hover:opacity-90">
+                  Get Started
+                </Button>
+              </QuoteDialog>
             </CardContent>
           </Card>
         </div>

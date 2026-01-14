@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import webfluidLogo from "@/assets/webfluid-logo.png";
+import QuoteDialog from "@/components/QuoteDialog";
 
 const navLinks = [
   { name: "Services", href: "#services" },
@@ -51,9 +52,11 @@ const Navbar = () => {
 
           {/* CTA Button */}
           <div className="hidden md:block">
-            <Button className="gradient-bg text-primary-foreground font-semibold">
-              Get Started
-            </Button>
+            <QuoteDialog>
+              <Button className="gradient-bg text-primary-foreground font-semibold">
+                Get Started
+              </Button>
+            </QuoteDialog>
           </div>
 
           {/* Mobile Menu Button */}
@@ -86,9 +89,11 @@ const Navbar = () => {
                   {link.name}
                 </a>
               ))}
-              <Button className="gradient-bg text-primary-foreground font-semibold mt-2">
-                Get Started
-              </Button>
+              <QuoteDialog>
+                <Button className="gradient-bg text-primary-foreground font-semibold mt-2">
+                  Get Started
+                </Button>
+              </QuoteDialog>
             </div>
           </div>
         </div>
