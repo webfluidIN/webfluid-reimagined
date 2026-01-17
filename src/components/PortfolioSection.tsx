@@ -161,19 +161,6 @@ const PortfolioSection = () => {
                       className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                       loading="lazy"
                     />
-                    
-                    {/* Overlay on hover */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-6">
-                      <a
-                        href={`https://${item.url}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-6 py-3 rounded-full gradient-bg text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
-                      >
-                        Visit Site
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    </div>
                   </div>
 
                   {/* Info */}
