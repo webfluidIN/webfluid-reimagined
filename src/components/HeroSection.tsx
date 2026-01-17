@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, ShoppingCart, Globe } from "lucide-react";
 import QuoteDialog from "@/components/QuoteDialog";
 import shopifyLogo from "@/assets/logos/shopify.svg";
-import wordpressLogo from "@/assets/logos/wordpress.png";
+import wordpressLogo from "@/assets/logos/wordpress.svg";
 import woocommerceLogo from "@/assets/logos/woocommerce.svg";
 import elementorLogo from "@/assets/logos/elementor.svg";
 const HeroSection = () => {
