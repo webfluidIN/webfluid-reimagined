@@ -86,15 +86,18 @@ const HeroSection = () => {
           {/* Trust indicators */}
           <div className="mt-16 pt-10 border-t border-border/50 animate-fade-in" style={{ animationDelay: "0.5s" }}>
             <p className="text-sm text-muted-foreground mb-6">Powered by industry-leading platforms</p>
-            <div className="flex flex-wrap items-center justify-center gap-8">
+            <div className="flex flex-wrap items-center justify-center gap-8 opacity-70">
               <div className="flex items-center gap-2">
                 <img src={shopifyLogo} alt="Shopify" className="h-7 w-auto" />
+                <span className="font-semibold">Shopify</span>
               </div>
               <div className="flex items-center gap-2">
                 <img src={wordpressLogo} alt="WordPress" className="h-7 w-auto" />
+                <span className="font-semibold">WordPress</span>
               </div>
               <div className="flex items-center gap-2">
                 <img src={woocommerceLogo} alt="WooCommerce" className="h-7 w-auto" />
+                <span className="font-semibold">WooCommerce</span>
               </div>
               <div className="flex items-center gap-2">
                 <img src={elementorLogo} alt="Elementor" className="h-6 w-auto" />
