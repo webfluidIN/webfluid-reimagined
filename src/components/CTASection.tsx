@@ -48,14 +48,19 @@ const CTASection = () => {
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </QuoteDialog>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-2 border-white text-white hover:bg-white/10 px-8 py-6 text-lg font-semibold"
+            <a
+              href="https://wa.me/917012508851?text=Hi!%20I'm%20interested%20in%20your%20web%20development%20services."
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <MessageCircle className="w-5 h-5 mr-2" />
-              Chat on WhatsApp
-            </Button>
+              <Button
+                size="lg"
+                className="bg-[#25D366] hover:bg-[#20BD5A] text-white px-8 py-6 text-lg font-semibold shadow-lg shadow-[#25D366]/30"
+              >
+                <MessageCircle className="w-5 h-5 mr-2" />
+                Chat on WhatsApp
+              </Button>
+            </a>
           </div>
 
           {/* Contact options */}
