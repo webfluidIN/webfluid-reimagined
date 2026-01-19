@@ -1,4 +1,5 @@
 import { MapPin, Mail, Phone, Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -110,12 +111,12 @@ const Footer = () => {
             © {currentYear} Webfluid. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm">
-            <a href="#" className="text-background/50 hover:text-primary transition-colors">
+            <Link to="/privacy-policy" className="text-background/50 hover:text-primary transition-colors">
               Privacy Policy
-            </a>
-            <a href="#" className="text-background/50 hover:text-primary transition-colors">
+            </Link>
+            <Link to="/terms-of-service" className="text-background/50 hover:text-primary transition-colors">
               Terms of Service
-            </a>
+            </Link>
           </div>
         </div>
       </div>
