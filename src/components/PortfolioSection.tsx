@@ -14,7 +14,7 @@ const portfolioItems: PortfolioItem[] = [
     name: "Zimal by Junaida",
     url: "zimalbyjunaida.com",
     description: "Luxury fashion boutique",
-    category: "Shopify",
+    category: "WooCommerce",
   },
   {
     name: "Lyra Modest",
@@ -26,19 +26,19 @@ const portfolioItems: PortfolioItem[] = [
     name: "The Blossoms Boutique",
     url: "theblossomsboutique.com",
     description: "Floral arrangements & gifts",
-    category: "WooCommerce",
+    category: "Shopify",
   },
   {
     name: "Leisure COK",
     url: "leisurecok.com",
     description: "Lifestyle products",
-    category: "Shopify",
+    category: "WordPress",
   },
   {
     name: "By Irfa",
     url: "byirfa.com",
     description: "Fashion & accessories",
-    category: "Shopify",
+    category: "WooCommerce",
   },
   {
     name: "Zahraa The Label",
@@ -62,6 +62,30 @@ const portfolioItems: PortfolioItem[] = [
     name: "Almas Group",
     url: "almasgroup.co",
     description: "Business conglomerate",
+    category: "PHP",
+  },
+  {
+    name: "Oma & Mimi",
+    url: "omamimini.com",
+    description: "Children's fashion brand",
+    category: "Shopify",
+  },
+  {
+    name: "Fleurelize",
+    url: "fleurelize.com",
+    description: "Luxury floral boutique",
+    category: "Shopify",
+  },
+  {
+    name: "Generation IX",
+    url: "www.generationix.com",
+    description: "Lifestyle & apparel brand",
+    category: "WordPress",
+  },
+  {
+    name: "British School Salalah",
+    url: "www.britishschoolsalalah.com",
+    description: "Educational institution",
     category: "WordPress",
   },
 ];
