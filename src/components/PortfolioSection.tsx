@@ -25,13 +25,13 @@ const portfolioItems: PortfolioItem[] = [
   {
     name: "The Blossoms Boutique",
     url: "theblossomsboutique.com",
-    description: "Floral arrangements & gifts",
+    description: "Women's fashion",
     category: "Shopify",
   },
   {
     name: "Leisure COK",
     url: "leisurecok.com",
-    description: "Lifestyle products",
+    description: "Travel agency",
     category: "WordPress",
   },
   {
@@ -61,7 +61,7 @@ const portfolioItems: PortfolioItem[] = [
   {
     name: "Almas Group",
     url: "almasgroup.co",
-    description: "Business conglomerate",
+    description: "Cargo company",
     category: "PHP",
   },
   {
@@ -73,13 +73,13 @@ const portfolioItems: PortfolioItem[] = [
   {
     name: "Fleurelize",
     url: "fleurelize.com",
-    description: "Luxury floral boutique",
+    description: "Clothing brand",
     category: "Shopify",
   },
   {
     name: "Generation IX",
     url: "www.generationix.com",
-    description: "Lifestyle & apparel brand",
+    description: "Managed IT services",
     category: "WordPress",
   },
   {
