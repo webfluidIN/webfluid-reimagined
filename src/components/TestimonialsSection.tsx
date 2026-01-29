@@ -3,16 +3,16 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const testimonials = [
   {
-    name: "Junaida K",
-    company: "Zimal by Junaida",
-    image: "https://ui-avatars.com/api/?name=Junaida+K&background=3b82f6&color=fff",
+    name: "Jessy Kennedy",
+    company: "Engel Lane",
+    image: "https://ui-avatars.com/api/?name=Jessy+Kennedy&background=3b82f6&color=fff",
     rating: 5,
     text: "Webfluid transformed our vision into a stunning online store. The team's attention to detail and understanding of our brand was exceptional. Sales have increased by 200% since launch!",
   },
   {
-    name: "Mohammed Irfan",
-    company: "By Irfa",
-    image: "https://ui-avatars.com/api/?name=Mohammed+Irfan&background=10b981&color=fff",
+    name: "Marina Irvin",
+    company: "Hatchgal",
+    image: "https://ui-avatars.com/api/?name=Marina+Irvin&background=10b981&color=fff",
     rating: 5,
     text: "Professional, responsive, and incredibly talented. They delivered our Shopify store ahead of schedule and the ongoing support has been invaluable for our business growth.",
   },
