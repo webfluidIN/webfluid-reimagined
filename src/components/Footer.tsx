@@ -1,29 +1,28 @@
 import { MapPin, Mail, Phone, Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
-
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-
-  const quickLinks = [
-    { name: "Services", href: "#services" },
-    { name: "Portfolio", href: "#portfolio" },
-    { name: "Our Team", href: "#team" },
-    { name: "How We Work", href: "#process" },
-    { name: "Testimonials", href: "#testimonials" },
-    { name: "FAQ", href: "#faq" },
-  ];
-
-  const services = [
-    "Shopify Development",
-    "WooCommerce Stores",
-    "WordPress Websites",
-    "Payment Integration",
-    "Store Management",
-    "SEO Optimization",
-  ];
-
-  return (
-    <footer className="bg-foreground text-background py-16">
+  const quickLinks = [{
+    name: "Services",
+    href: "#services"
+  }, {
+    name: "Portfolio",
+    href: "#portfolio"
+  }, {
+    name: "Our Team",
+    href: "#team"
+  }, {
+    name: "How We Work",
+    href: "#process"
+  }, {
+    name: "Testimonials",
+    href: "#testimonials"
+  }, {
+    name: "FAQ",
+    href: "#faq"
+  }];
+  const services = ["Shopify Development", "WooCommerce Stores", "WordPress Websites", "Payment Integration", "Store Management", "SEO Optimization"];
+  return <footer className="bg-foreground text-background py-16">
       <div className="container px-4">
         <div className="grid md:grid-cols-4 gap-10 mb-12">
           {/* Brand */}
@@ -54,16 +53,11 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-3">
-              {quickLinks.map((link) => (
-                <li key={link.name}>
-                  <a
-                    href={link.href}
-                    className="text-background/70 hover:text-primary transition-colors"
-                  >
+              {quickLinks.map(link => <li key={link.name}>
+                  <a href={link.href} className="text-background/70 hover:text-primary transition-colors">
                     {link.name}
                   </a>
-                </li>
-              ))}
+                </li>)}
             </ul>
           </div>
 
@@ -71,11 +65,9 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">Services</h4>
             <ul className="space-y-3">
-              {services.map((service) => (
-                <li key={service}>
+              {services.map(service => <li key={service}>
                   <span className="text-background/70">{service}</span>
-                </li>
-              ))}
+                </li>)}
             </ul>
           </div>
 
@@ -85,9 +77,7 @@ const Footer = () => {
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span className="text-background/70">
-                  Calicut & Kannur, Kerala, India
-                </span>
+                <span className="text-background/70">Calicut, Kerala, India</span>
               </li>
               <li>
                 <a href="mailto:hello@webfluid.in" className="flex items-center gap-3 text-background/70 hover:text-primary transition-colors">
@@ -120,8 +110,6 @@ const Footer = () => {
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;

@@ -11,23 +11,39 @@ import retreat2 from "@/assets/team/retreat-2.jpg";
 import retreat3 from "@/assets/team/retreat-3.jpg";
 import retreat4 from "@/assets/team/retreat-4.jpg";
 import retreat5 from "@/assets/team/retreat-5.jpg";
-
-const teamImages = [
-  { src: office, alt: "Webfluid office space" },
-  { src: officeStaff, alt: "Team working at office" },
-  { src: officeInauguration, alt: "Office inauguration ceremony" },
-  { src: officeCake, alt: "Team celebration" },
-  { src: team, alt: "Webfluid team photo" },
-  { src: retreat1, alt: "Team retreat activities" },
-  { src: retreat2, alt: "Team bonding outdoors" },
-  { src: retreat3, alt: "Team retreat nature" },
-  { src: retreat4, alt: "Team adventures" },
-  { src: retreat5, alt: "Team outing" },
-];
-
+const teamImages = [{
+  src: office,
+  alt: "Webfluid office space"
+}, {
+  src: officeStaff,
+  alt: "Team working at office"
+}, {
+  src: officeInauguration,
+  alt: "Office inauguration ceremony"
+}, {
+  src: officeCake,
+  alt: "Team celebration"
+}, {
+  src: team,
+  alt: "Webfluid team photo"
+}, {
+  src: retreat1,
+  alt: "Team retreat activities"
+}, {
+  src: retreat2,
+  alt: "Team bonding outdoors"
+}, {
+  src: retreat3,
+  alt: "Team retreat nature"
+}, {
+  src: retreat4,
+  alt: "Team adventures"
+}, {
+  src: retreat5,
+  alt: "Team outing"
+}];
 const TeamSection = () => {
-  return (
-    <section id="team" className="py-20 md:py-32 bg-muted/30 overflow-hidden">
+  return <section id="team" className="py-20 md:py-32 bg-muted/30 overflow-hidden">
       <div className="container px-4">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <h2 className="text-3xl md:text-5xl font-display font-bold mb-4">
@@ -45,7 +61,7 @@ const TeamSection = () => {
             </div>
             <div className="flex items-center gap-3 px-4 py-2 rounded-full glass">
               <MapPin className="w-5 h-5 text-secondary" />
-              <span className="font-semibold">Calicut & Kannur, Kerala</span>
+              <span className="font-semibold">Calicut, Kerala</span>
             </div>
             <div className="flex items-center gap-3 px-4 py-2 rounded-full glass">
               <Globe2 className="w-5 h-5 text-accent" />
@@ -63,31 +79,13 @@ const TeamSection = () => {
           {/* Scrolling container */}
           <div className="flex animate-scroll">
             {/* First set of images */}
-            {teamImages.map((image, index) => (
-              <div
-                key={`first-${index}`}
-                className="flex-shrink-0 w-64 md:w-80 h-48 md:h-56 mx-2 rounded-xl overflow-hidden group"
-              >
-                <img
-                  src={image.src}
-                  alt={image.alt}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-              </div>
-            ))}
+            {teamImages.map((image, index) => <div key={`first-${index}`} className="flex-shrink-0 w-64 md:w-80 h-48 md:h-56 mx-2 rounded-xl overflow-hidden group">
+                <img src={image.src} alt={image.alt} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              </div>)}
             {/* Duplicate set for seamless loop */}
-            {teamImages.map((image, index) => (
-              <div
-                key={`second-${index}`}
-                className="flex-shrink-0 w-64 md:w-80 h-48 md:h-56 mx-2 rounded-xl overflow-hidden group"
-              >
-                <img
-                  src={image.src}
-                  alt={image.alt}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-              </div>
-            ))}
+            {teamImages.map((image, index) => <div key={`second-${index}`} className="flex-shrink-0 w-64 md:w-80 h-48 md:h-56 mx-2 rounded-xl overflow-hidden group">
+                <img src={image.src} alt={image.alt} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              </div>)}
           </div>
         </div>
 
@@ -100,8 +98,6 @@ const TeamSection = () => {
           </p>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default TeamSection;
