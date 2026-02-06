@@ -180,7 +180,7 @@ const PortfolioSection = () => {
                   {/* Screenshot area */}
                   <div className="relative aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 overflow-hidden">
                     <img
-                      src={`https://image.thum.io/get/width/600/crop/800/https://${item.url}`}
+                      src={`https://image.thum.io/get/nonce/v2/width/600/crop/800/https://${item.url}`}
                       alt={`${item.name} website screenshot`}
                       className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                       loading="lazy"
