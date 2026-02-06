@@ -1,12 +1,28 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+// Portfolio screenshots
+import screenshotZimal from "@/assets/portfolio/zimalbyjunaida.jpg";
+import screenshotLyra from "@/assets/portfolio/lyramodest.jpg";
+import screenshotBlossoms from "@/assets/portfolio/theblossomsboutique.jpg";
+import screenshotLeisure from "@/assets/portfolio/leisurecok.jpg";
+import screenshotByirfa from "@/assets/portfolio/byirfa.jpg";
+import screenshotZahraa from "@/assets/portfolio/zahraathelabel.jpg";
+import screenshotTanya from "@/assets/portfolio/tanyataylor.jpg";
+import screenshotAlnaseem from "@/assets/portfolio/alnaseemgroup.jpg";
+import screenshotAlmas from "@/assets/portfolio/almasgroup.jpg";
+import screenshotOmamimi from "@/assets/portfolio/omamimini.jpg";
+import screenshotFleurelize from "@/assets/portfolio/fleurelize.jpg";
+import screenshotGenerationix from "@/assets/portfolio/generationix.jpg";
+import screenshotBritishSchool from "@/assets/portfolio/britishschoolsalalah.jpg";
 
 interface PortfolioItem {
   name: string;
   url: string;
   description: string;
   category: string;
+  screenshot: string;
 }
 
 const portfolioItems: PortfolioItem[] = [
@@ -15,78 +31,91 @@ const portfolioItems: PortfolioItem[] = [
     url: "zimalbyjunaida.com",
     description: "Luxury fashion boutique",
     category: "WooCommerce",
+    screenshot: screenshotZimal,
   },
   {
     name: "Lyra Modest",
     url: "lyramodest.com",
     description: "Modest fashion wear",
     category: "Shopify",
+    screenshot: screenshotLyra,
   },
   {
     name: "The Blossoms Boutique",
     url: "theblossomsboutique.com",
     description: "Women's fashion",
     category: "Shopify",
+    screenshot: screenshotBlossoms,
   },
   {
     name: "Leisure COK",
     url: "leisurecok.com",
     description: "Travel agency",
     category: "WordPress",
+    screenshot: screenshotLeisure,
   },
   {
     name: "By Irfa",
     url: "byirfa.com",
     description: "Fashion & accessories",
     category: "WooCommerce",
+    screenshot: screenshotByirfa,
   },
   {
     name: "Zahraa The Label",
     url: "zahraathelabel.com",
     description: "Contemporary fashion",
     category: "Shopify",
+    screenshot: screenshotZahraa,
   },
   {
     name: "Tanya Taylor",
     url: "tanyataylor.com",
     description: "Designer fashion brand",
     category: "Shopify",
+    screenshot: screenshotTanya,
   },
   {
     name: "Al Naseem Group",
     url: "alnaseemgroup.com",
     description: "Corporate business website",
     category: "WordPress",
+    screenshot: screenshotAlnaseem,
   },
   {
     name: "Almas Group",
     url: "almasgroup.co",
     description: "Cargo company",
     category: "PHP",
+    screenshot: screenshotAlmas,
   },
   {
     name: "Oma & Mimi",
     url: "omamimini.com",
     description: "Children's fashion brand",
     category: "Shopify",
+    screenshot: screenshotOmamimi,
   },
   {
     name: "Fleurelize",
     url: "fleurelize.com",
     description: "Clothing brand",
     category: "Shopify",
+    screenshot: screenshotFleurelize,
   },
   {
     name: "Generation IX",
     url: "www.generationix.com",
     description: "Managed IT services",
     category: "WordPress",
+    screenshot: screenshotGenerationix,
   },
   {
     name: "British School Salalah",
     url: "www.britishschoolsalalah.com",
     description: "Educational institution",
     category: "WordPress",
+    screenshot: screenshotBritishSchool,
   },
 ];
 
@@ -180,7 +209,7 @@ const PortfolioSection = () => {
                   {/* Screenshot area */}
                   <div className="relative aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 overflow-hidden">
                     <img
-                      src={`https://image.thum.io/get/nonce/v2/width/600/crop/800/https://${item.url}`}
+                      src={item.screenshot}
                       alt={`${item.name} website screenshot`}
                       className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                       loading="lazy"
