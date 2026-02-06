@@ -1,5 +1,6 @@
 import { MapPin, Mail, Phone, Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
+import webfluidLogo from "@/assets/webfluid-logo.png";
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const quickLinks = [{
@@ -27,9 +28,9 @@ const Footer = () => {
         <div className="grid md:grid-cols-4 gap-10 mb-12">
           {/* Brand */}
           <div className="md:col-span-1">
-            <h3 className="text-2xl font-display font-bold mb-4">
-              Web<span className="text-primary">fluid</span>
-            </h3>
+            <a href="/" className="inline-block mb-4">
+              <img src={webfluidLogo} alt="Webfluid" className="h-8 md:h-10 w-auto brightness-0 invert" />
+            </a>
             <p className="text-background/70 mb-6">
               Building exceptional eCommerce experiences since 2017. Your trusted partner for Shopify & WordPress development.
             </p>

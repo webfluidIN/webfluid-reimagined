@@ -5,11 +5,11 @@ import webfluidLogo from "@/assets/webfluid-logo.png";
 import QuoteDialog from "@/components/QuoteDialog";
 
 const navLinks = [
-  { name: "Services", href: "#services" },
-  { name: "Portfolio", href: "#portfolio" },
-  { name: "Team", href: "#team" },
-  { name: "Process", href: "#process" },
-  { name: "FAQ", href: "#faq" },
+  { name: "Services", href: "/#services" },
+  { name: "Portfolio", href: "/#portfolio" },
+  { name: "Team", href: "/#team" },
+  { name: "Process", href: "/#process" },
+  { name: "FAQ", href: "/#faq" },
 ];
 
 const Navbar = () => {
@@ -33,7 +33,7 @@ const Navbar = () => {
       <div className="container px-4">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <a href="#" className="flex items-center">
+          <a href="/" className="flex items-center">
             <img src={webfluidLogo} alt="Webfluid" className="h-8 md:h-10 w-auto" />
           </a>
 
