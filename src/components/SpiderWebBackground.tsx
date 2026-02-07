@@ -97,7 +97,7 @@ const SpiderWeb = ({
             x2={line.x2}
             y2={line.y2}
             stroke={color}
-            strokeWidth={1.2}
+            strokeWidth={1.8}
             strokeLinecap="round"
             initial={animate ? { pathLength: 0 } : {}}
             whileInView={animate ? { pathLength: 1 } : {}}
@@ -116,7 +116,7 @@ const SpiderWeb = ({
             key={`ring-${i}`}
             d={d}
             stroke={color}
-            strokeWidth={0.8}
+            strokeWidth={1.2}
             fill="none"
             strokeLinecap="round"
             initial={animate ? { pathLength: 0, opacity: 0 } : {}}
@@ -134,7 +134,7 @@ const SpiderWeb = ({
         <motion.circle
           cx={center}
           cy={center}
-          r={3}
+          r={4.5}
           fill={color}
           initial={animate ? { scale: 0 } : {}}
           whileInView={animate ? { scale: 1 } : {}}
@@ -156,7 +156,7 @@ const SpiderWeb = ({
                   key={`dot-${si}-${ri}`}
                   cx={x}
                   cy={y}
-                  r={1.5}
+                  r={2.2}
                   fill={color}
                   initial={animate ? { scale: 0 } : {}}
                   whileInView={animate ? { scale: 1 } : {}}
@@ -194,20 +194,20 @@ const WebStrand = ({
       transition={{ duration: 1, delay, ease: [0.23, 1, 0.32, 1] }}
       viewport={{ once: true, amount: 0.3 }}
     >
-      <svg width="100%" height="20" viewBox="0 0 400 20" preserveAspectRatio="none">
+      <svg width="100%" height="24" viewBox="0 0 400 24" preserveAspectRatio="none">
         <path
-          d="M0 10 Q 50 2, 100 10 Q 150 18, 200 10 Q 250 2, 300 10 Q 350 18, 400 10"
+          d="M0 12 Q 50 3, 100 12 Q 150 21, 200 12 Q 250 3, 300 12 Q 350 21, 400 12"
           stroke={color}
-          strokeWidth={1}
+          strokeWidth={1.8}
           fill="none"
           strokeLinecap="round"
         />
         <path
-          d="M0 10 Q 80 5, 160 10 Q 240 15, 320 10 Q 360 7, 400 10"
+          d="M0 12 Q 80 6, 160 12 Q 240 18, 320 12 Q 360 8, 400 12"
           stroke={color}
-          strokeWidth={0.6}
+          strokeWidth={1}
           fill="none"
-          opacity={0.5}
+          opacity={0.6}
         />
       </svg>
     </motion.div>

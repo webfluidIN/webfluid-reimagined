@@ -10,7 +10,7 @@ const CTASection = () => {
       <div className="absolute inset-0 gradient-bg opacity-95" />
       
       {/* Spider web on CTA */}
-      <SpiderWebBackground variant="sides" color="hsl(0 0% 100%)" opacity={0.1} webSize={350} />
+      <SpiderWebBackground variant="sides" color="hsl(0 0% 100%)" opacity={0.2} webSize={500} />
       
       {/* Decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
