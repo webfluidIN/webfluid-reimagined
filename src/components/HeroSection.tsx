@@ -10,7 +10,7 @@ const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background to-muted">
       {/* Spider web effect */}
-      <SpiderWebBackground particleCount={70} connectionDistance={180} opacity={0.12} speed={0.25} />
+      <SpiderWebBackground variant="sides" opacity={0.1} webSize={400} />
       
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">

@@ -45,7 +45,7 @@ const teamImages = [{
 }];
 const TeamSection = () => {
   return <section id="team" className="py-20 md:py-32 bg-muted/30 overflow-hidden relative">
-      <SpiderWebBackground color="var(--brand-blue)" particleCount={35} connectionDistance={130} opacity={0.07} speed={0.18} />
+      <SpiderWebBackground variant="corners" color="hsl(var(--brand-blue))" opacity={0.09} webSize={300} />
       <div className="container px-4 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <h2 className="text-3xl md:text-5xl font-display font-bold mb-4">
