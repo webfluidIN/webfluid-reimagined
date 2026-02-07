@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import SpiderWebBackground from "@/components/SpiderWebBackground";
 
 const faqs = [
   {
@@ -42,8 +43,9 @@ const faqs = [
 
 const FAQSection = () => {
   return (
-    <section id="faq" className="py-20 md:py-32 bg-background">
-      <div className="container px-4">
+    <section id="faq" className="py-20 md:py-32 bg-background relative overflow-hidden">
+      <SpiderWebBackground color="var(--primary)" particleCount={30} connectionDistance={120} opacity={0.06} speed={0.15} />
+      <div className="container px-4 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl md:text-5xl font-display font-bold mb-4">
             Frequently Asked <span className="gradient-text">Questions</span>

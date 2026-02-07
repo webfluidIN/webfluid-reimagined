@@ -1,5 +1,6 @@
 import { Star, Quote } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import SpiderWebBackground from "@/components/SpiderWebBackground";
 
 const testimonials = [
   {
@@ -34,8 +35,9 @@ const testimonials = [
 
 const TestimonialsSection = () => {
   return (
-    <section id="testimonials" className="py-20 md:py-32 bg-muted/30">
-      <div className="container px-4">
+    <section id="testimonials" className="py-20 md:py-32 bg-muted/30 relative overflow-hidden">
+      <SpiderWebBackground color="var(--brand-purple)" particleCount={35} connectionDistance={120} opacity={0.07} speed={0.2} />
+      <div className="container px-4 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl md:text-5xl font-display font-bold mb-4">
             What Our <span className="gradient-text">Clients</span> Say

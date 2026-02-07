@@ -1,4 +1,5 @@
 import { MapPin, Globe2, Calendar } from "lucide-react";
+import SpiderWebBackground from "@/components/SpiderWebBackground";
 
 // Import team images
 import officeInauguration from "@/assets/team/office-inauguration.jpeg";
@@ -43,8 +44,9 @@ const teamImages = [{
   alt: "Team outing"
 }];
 const TeamSection = () => {
-  return <section id="team" className="py-20 md:py-32 bg-muted/30 overflow-hidden">
-      <div className="container px-4">
+  return <section id="team" className="py-20 md:py-32 bg-muted/30 overflow-hidden relative">
+      <SpiderWebBackground color="var(--brand-blue)" particleCount={35} connectionDistance={130} opacity={0.07} speed={0.18} />
+      <div className="container px-4 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <h2 className="text-3xl md:text-5xl font-display font-bold mb-4">
             Meet the <span className="gradient-text">People</span> Behind Webfluid
