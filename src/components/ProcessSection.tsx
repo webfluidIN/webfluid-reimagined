@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { MessageSquare, Palette, Code2, Rocket, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import SpiderWebBackground from "@/components/SpiderWebBackground";
 
 const steps = [
   {
@@ -71,8 +72,9 @@ const ProcessSection = () => {
   const [activeStep, setActiveStep] = useState(0);
 
   return (
-    <section id="process" className="py-20 md:py-32 bg-background overflow-hidden">
-      <div className="container px-4">
+    <section id="process" className="py-20 md:py-32 bg-background overflow-hidden relative">
+      <SpiderWebBackground color="var(--accent)" particleCount={35} connectionDistance={130} opacity={0.06} speed={0.15} />
+      <div className="container px-4 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl md:text-5xl font-display font-bold mb-4">
             How We <span className="gradient-text">Work</span>

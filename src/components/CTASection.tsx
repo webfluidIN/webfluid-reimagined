@@ -1,12 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MessageCircle, Mail, Phone } from "lucide-react";
 import QuoteDialog from "@/components/QuoteDialog";
+import SpiderWebBackground from "@/components/SpiderWebBackground";
 
 const CTASection = () => {
   return (
     <section className="py-20 md:py-32 relative overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 gradient-bg opacity-95" />
+      
+      {/* Spider web on CTA */}
+      <SpiderWebBackground color="var(--primary-foreground)" particleCount={45} connectionDistance={160} opacity={0.1} speed={0.2} />
       
       {/* Decorative elements */}
       <div className="absolute inset-0 overflow-hidden">

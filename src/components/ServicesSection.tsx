@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Check, ShoppingCart, Globe, Zap, HeadphonesIcon, CreditCard, Package } from "lucide-react";
 import QuoteDialog from "@/components/QuoteDialog";
+import SpiderWebBackground from "@/components/SpiderWebBackground";
 
 const ServicesSection = () => {
   const ecommerceFeatures = [
@@ -23,8 +24,9 @@ const ServicesSection = () => {
   ];
 
   return (
-    <section id="services" className="py-20 md:py-32 bg-muted/30">
-      <div className="container px-4">
+    <section id="services" className="py-20 md:py-32 bg-muted/30 relative overflow-hidden">
+      <SpiderWebBackground color="var(--secondary)" particleCount={40} connectionDistance={140} opacity={0.08} speed={0.2} />
+      <div className="container px-4 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl md:text-5xl font-display font-bold mb-4">
             All-Inclusive <span className="gradient-text">Pricing</span>

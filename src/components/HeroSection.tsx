@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, ShoppingCart, Globe } from "lucide-react";
 import QuoteDialog from "@/components/QuoteDialog";
+import SpiderWebBackground from "@/components/SpiderWebBackground";
 import shopifyLogo from "@/assets/logos/shopify.svg";
 import wordpressLogo from "@/assets/logos/wordpress.svg";
 import woocommerceLogo from "@/assets/logos/woocommerce.svg";
@@ -8,6 +9,9 @@ import elementorLogo from "@/assets/logos/elementor.svg";
 const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background to-muted">
+      {/* Spider web effect */}
+      <SpiderWebBackground particleCount={70} connectionDistance={180} opacity={0.12} speed={0.25} />
+      
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/20 rounded-full blur-3xl animate-pulse" />
