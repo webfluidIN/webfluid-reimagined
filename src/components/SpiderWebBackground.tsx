@@ -90,13 +90,9 @@ const CornerWeb = ({
     <motion.div
       className={`absolute pointer-events-none ${positionClass[corner]}`}
       style={{ transform: transformStyle[corner] }}
-      initial={{ scale: 0, opacity: 0 }}
-      whileInView={{ scale: 1, opacity: 1 }}
-      transition={{
-        duration: 0.8,
-        delay,
-        ease: [0.23, 1, 0.32, 1],
-      }}
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      transition={{ duration: 0.3, delay }}
       viewport={{ once: true, amount: 0.1 }}
     >
       <svg
@@ -106,7 +102,19 @@ const CornerWeb = ({
         fill="none"
         style={{ opacity }}
       >
-        {/* Main strands from corner */}
+        {/* Anchor dot at corner origin — appears first like shooter impact */}
+        <motion.circle
+          cx={origin.x}
+          cy={origin.y}
+          r={6}
+          fill={color}
+          initial={{ scale: 0, opacity: 0 }}
+          whileInView={{ scale: [0, 2.5, 1], opacity: [0, 1, 1] }}
+          transition={{ duration: 0.4, delay, ease: "easeOut" }}
+          viewport={{ once: true }}
+        />
+
+        {/* Main strands shoot out from corner — fast with overshoot */}
         {strandData.map((strand, i) => (
           <motion.line
             key={`strand-${i}`}
@@ -117,18 +125,24 @@ const CornerWeb = ({
             stroke={color}
             strokeWidth={i === 0 || i === strandData.length - 1 ? 2.5 : 1.6}
             strokeLinecap="round"
-            initial={{ pathLength: 0 }}
-            whileInView={{ pathLength: 1 }}
+            initial={{ pathLength: 0, opacity: 0 }}
+            whileInView={{ pathLength: 1, opacity: [0, 1, 1] }}
             transition={{
-              duration: 0.5,
-              delay: delay + i * 0.04,
-              ease: "easeOut",
+              pathLength: {
+                duration: 0.35,
+                delay: delay + 0.15 + i * 0.06,
+                ease: [0.16, 1, 0.3, 1],
+              },
+              opacity: {
+                duration: 0.1,
+                delay: delay + 0.15 + i * 0.06,
+              },
             }}
             viewport={{ once: true }}
           />
         ))}
 
-        {/* Connecting ring arcs */}
+        {/* Connecting ring arcs — drawn sequentially from inner to outer */}
         {ringPaths.map((d, i) => (
           <motion.path
             key={`ring-${i}`}
@@ -140,15 +154,21 @@ const CornerWeb = ({
             initial={{ pathLength: 0, opacity: 0 }}
             whileInView={{ pathLength: 1, opacity: 1 }}
             transition={{
-              duration: 0.6,
-              delay: delay + 0.25 + i * 0.08,
-              ease: "easeOut",
+              pathLength: {
+                duration: 0.5,
+                delay: delay + 0.5 + i * 0.12,
+                ease: [0.25, 1, 0.5, 1],
+              },
+              opacity: {
+                duration: 0.15,
+                delay: delay + 0.5 + i * 0.12,
+              },
             }}
             viewport={{ once: true }}
           />
         ))}
 
-        {/* Junction dots at intersections */}
+        {/* Junction dots pop in as rings are drawn */}
         {strandData.map((strand, si) =>
           Array.from({ length: rings }, (_, ri) => {
             const radius = ((ri + 1) * maxRadius) / (rings + 0.5);
@@ -161,13 +181,14 @@ const CornerWeb = ({
                 key={`dot-${si}-${ri}`}
                 cx={x}
                 cy={y}
-                r={2}
+                r={2.5}
                 fill={color}
-                initial={{ scale: 0 }}
-                whileInView={{ scale: 1 }}
+                initial={{ scale: 0, opacity: 0 }}
+                whileInView={{ scale: [0, 1.8, 1], opacity: 1 }}
                 transition={{
-                  duration: 0.15,
-                  delay: delay + 0.4 + ri * 0.04 + si * 0.02,
+                  duration: 0.25,
+                  delay: delay + 0.55 + ri * 0.12 + si * 0.03,
+                  ease: "easeOut",
                 }}
                 viewport={{ once: true }}
               />
@@ -175,15 +196,17 @@ const CornerWeb = ({
           })
         )}
 
-        {/* Anchor dot at corner origin */}
+        {/* Glow pulse at origin after web is shot */}
         <motion.circle
           cx={origin.x}
           cy={origin.y}
-          r={5}
-          fill={color}
-          initial={{ scale: 0 }}
-          whileInView={{ scale: 1 }}
-          transition={{ duration: 0.3, delay }}
+          r={15}
+          fill="none"
+          stroke={color}
+          strokeWidth={2}
+          initial={{ scale: 0, opacity: 0.6 }}
+          whileInView={{ scale: [0, 1.5], opacity: [0.6, 0] }}
+          transition={{ duration: 0.6, delay: delay + 0.05, ease: "easeOut" }}
           viewport={{ once: true }}
         />
       </svg>
@@ -205,25 +228,42 @@ const DroopStrand = ({
 }) => (
   <motion.div
     className={`absolute pointer-events-none ${className}`}
-    initial={{ scaleX: 0, opacity: 0 }}
-    whileInView={{ scaleX: 1, opacity }}
-    transition={{ duration: 0.8, delay, ease: [0.23, 1, 0.32, 1] }}
+    initial={{ opacity: 0 }}
+    whileInView={{ opacity: 1 }}
+    transition={{ duration: 0.2, delay }}
     viewport={{ once: true, amount: 0.3 }}
   >
     <svg width="100%" height="30" viewBox="0 0 500 30" preserveAspectRatio="none">
-      <path
+      <motion.path
         d="M0 2 Q 125 28, 250 8 Q 375 -12, 500 4"
         stroke={color}
         strokeWidth={1.5}
         fill="none"
         strokeLinecap="round"
+        style={{ opacity }}
+        initial={{ pathLength: 0 }}
+        whileInView={{ pathLength: 1 }}
+        transition={{
+          duration: 0.7,
+          delay: delay + 0.1,
+          ease: [0.16, 1, 0.3, 1],
+        }}
+        viewport={{ once: true }}
       />
-      <path
+      <motion.path
         d="M0 6 Q 100 22, 200 10 Q 350 -2, 500 8"
         stroke={color}
         strokeWidth={0.8}
         fill="none"
-        opacity={0.5}
+        style={{ opacity: opacity * 0.5 }}
+        initial={{ pathLength: 0 }}
+        whileInView={{ pathLength: 1 }}
+        transition={{
+          duration: 0.6,
+          delay: delay + 0.3,
+          ease: [0.16, 1, 0.3, 1],
+        }}
+        viewport={{ once: true }}
       />
     </svg>
   </motion.div>
