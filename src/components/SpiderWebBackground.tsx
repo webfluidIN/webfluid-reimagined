@@ -1,85 +1,103 @@
-import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
-interface SpiderWebProps {
-  className?: string;
-  position?: "top-left" | "top-right" | "bottom-left" | "bottom-right" | "center";
+interface CornerWebProps {
+  corner: "top-left" | "top-right" | "bottom-left" | "bottom-right";
   size?: number;
   color?: string;
   opacity?: number;
-  animate?: boolean;
   delay?: number;
+  strands?: number;
   rings?: number;
-  spokes?: number;
 }
 
-const SpiderWeb = ({
-  className = "",
-  position = "top-left",
-  size = 300,
+const CornerWeb = ({
+  corner = "top-left",
+  size = 500,
   color = "currentColor",
-  opacity = 0.15,
-  animate = true,
+  opacity = 0.18,
   delay = 0,
-  rings = 6,
-  spokes = 12,
-}: SpiderWebProps) => {
-  const center = size / 2;
-  const maxRadius = size / 2 - 10;
+  strands = 10,
+  rings = 7,
+}: CornerWebProps) => {
+  // The origin point is at the corner, strands fan out into the section
+  const origin = { x: 0, y: 0 };
 
-  // Generate spoke lines
-  const spokeLines = Array.from({ length: spokes }, (_, i) => {
-    const angle = (i * 2 * Math.PI) / spokes;
-    const endX = center + Math.cos(angle) * maxRadius;
-    const endY = center + Math.sin(angle) * maxRadius;
-    return { x1: center, y1: center, x2: endX, y2: endY, angle };
+  // Determine angle range based on corner (quarter arc)
+  const angleRange: Record<string, { start: number; end: number }> = {
+    "top-left": { start: 0, end: Math.PI / 2 },
+    "top-right": { start: Math.PI / 2, end: Math.PI },
+    "bottom-right": { start: Math.PI, end: (3 * Math.PI) / 2 },
+    "bottom-left": { start: (3 * Math.PI) / 2, end: 2 * Math.PI },
+  };
+
+  const { start: startAngle, end: endAngle } = angleRange[corner];
+  const maxRadius = size - 20;
+
+  // Generate strand endpoints
+  const strandData = Array.from({ length: strands }, (_, i) => {
+    const t = i / (strands - 1);
+    const angle = startAngle + t * (endAngle - startAngle);
+    // Add slight wobble for organic feel
+    const wobble = Math.sin(i * 2.7) * (maxRadius * 0.04);
+    const r = maxRadius + wobble;
+    const endX = origin.x + Math.cos(angle) * r;
+    const endY = origin.y + Math.sin(angle) * r;
+    return { endX, endY, angle };
   });
 
-  // Generate concentric ring paths (curved between spokes)
+  // Generate ring paths (arcs connecting strands at different radii)
   const ringPaths = Array.from({ length: rings }, (_, ringIdx) => {
-    const radius = ((ringIdx + 1) * maxRadius) / rings;
-    // Add slight irregularity for organic feel
-    const points = spokeLines.map((spoke, i) => {
-      const wobble = Math.sin(i * 3 + ringIdx * 2) * (radius * 0.06);
+    const radius = ((ringIdx + 1) * maxRadius) / (rings + 0.5);
+    const points = strandData.map((strand, i) => {
+      const wobble = Math.sin(i * 3.1 + ringIdx * 1.7) * (radius * 0.07);
       const r = radius + wobble;
-      const x = center + Math.cos(spoke.angle) * r;
-      const y = center + Math.sin(spoke.angle) * r;
+      const x = origin.x + Math.cos(strand.angle) * r;
+      const y = origin.y + Math.sin(strand.angle) * r;
       return { x, y };
     });
 
-    // Create path connecting points
     let d = `M ${points[0].x} ${points[0].y}`;
-    for (let i = 1; i <= points.length; i++) {
-      const current = points[i % points.length];
-      const prev = points[(i - 1) % points.length];
-      // Slight curve between points
-      const cx = (prev.x + current.x) / 2 + (center - (prev.x + current.x) / 2) * 0.1;
-      const cy = (prev.y + current.y) / 2 + (center - (prev.y + current.y) / 2) * 0.1;
-      d += ` Q ${cx} ${cy} ${current.x} ${current.y}`;
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i - 1];
+      const curr = points[i];
+      // Curve slightly toward origin for web sag effect
+      const mx = (prev.x + curr.x) / 2;
+      const my = (prev.y + curr.y) / 2;
+      const cx = mx + (origin.x - mx) * 0.15;
+      const cy = my + (origin.y - my) * 0.15;
+      d += ` Q ${cx} ${cy} ${curr.x} ${curr.y}`;
     }
     return d;
   });
 
-  // Position styles
-  const positionStyles: Record<string, string> = {
-    "top-left": "-top-[30%] -left-[30%]",
-    "top-right": "-top-[30%] -right-[30%]",
-    "bottom-left": "-bottom-[30%] -left-[30%]",
-    "bottom-right": "-bottom-[30%] -right-[30%]",
-    "center": "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
+  // Position the SVG at the correct corner
+  const positionClass: Record<string, string> = {
+    "top-left": "top-0 left-0",
+    "top-right": "top-0 right-0",
+    "bottom-left": "bottom-0 left-0",
+    "bottom-right": "bottom-0 right-0",
+  };
+
+  // Transform to flip the SVG into the correct corner orientation
+  const transformStyle: Record<string, string> = {
+    "top-left": "none",
+    "top-right": "scaleX(-1)",
+    "bottom-left": "scaleY(-1)",
+    "bottom-right": "scale(-1)",
   };
 
   return (
     <motion.div
-      className={`absolute pointer-events-none ${positionStyles[position]} ${className}`}
-      initial={animate ? { scale: 0, opacity: 0, rotate: -30 } : {}}
-      whileInView={animate ? { scale: 1, opacity: 1, rotate: 0 } : {}}
+      className={`absolute pointer-events-none ${positionClass[corner]}`}
+      style={{ transform: transformStyle[corner] }}
+      initial={{ scale: 0, opacity: 0 }}
+      whileInView={{ scale: 1, opacity: 1 }}
       transition={{
-        duration: 1.2,
+        duration: 0.8,
         delay,
         ease: [0.23, 1, 0.32, 1],
       }}
-      viewport={{ once: true, amount: 0.3 }}
+      viewport={{ once: true, amount: 0.1 }}
     >
       <svg
         width={size}
@@ -88,29 +106,29 @@ const SpiderWeb = ({
         fill="none"
         style={{ opacity }}
       >
-        {/* Spokes */}
-        {spokeLines.map((line, i) => (
+        {/* Main strands from corner */}
+        {strandData.map((strand, i) => (
           <motion.line
-            key={`spoke-${i}`}
-            x1={line.x1}
-            y1={line.y1}
-            x2={line.x2}
-            y2={line.y2}
+            key={`strand-${i}`}
+            x1={origin.x}
+            y1={origin.y}
+            x2={strand.endX}
+            y2={strand.endY}
             stroke={color}
-            strokeWidth={1.8}
+            strokeWidth={i === 0 || i === strandData.length - 1 ? 2.5 : 1.6}
             strokeLinecap="round"
-            initial={animate ? { pathLength: 0 } : {}}
-            whileInView={animate ? { pathLength: 1 } : {}}
+            initial={{ pathLength: 0 }}
+            whileInView={{ pathLength: 1 }}
             transition={{
-              duration: 0.6,
-              delay: delay + i * 0.03,
+              duration: 0.5,
+              delay: delay + i * 0.04,
               ease: "easeOut",
             }}
             viewport={{ once: true }}
           />
         ))}
 
-        {/* Concentric rings */}
+        {/* Connecting ring arcs */}
         {ringPaths.map((d, i) => (
           <motion.path
             key={`ring-${i}`}
@@ -119,63 +137,62 @@ const SpiderWeb = ({
             strokeWidth={1.2}
             fill="none"
             strokeLinecap="round"
-            initial={animate ? { pathLength: 0, opacity: 0 } : {}}
-            whileInView={animate ? { pathLength: 1, opacity: 1 } : {}}
+            initial={{ pathLength: 0, opacity: 0 }}
+            whileInView={{ pathLength: 1, opacity: 1 }}
             transition={{
-              duration: 0.8,
-              delay: delay + 0.3 + i * 0.1,
+              duration: 0.6,
+              delay: delay + 0.25 + i * 0.08,
               ease: "easeOut",
             }}
             viewport={{ once: true }}
           />
         ))}
 
-        {/* Center dot */}
+        {/* Junction dots at intersections */}
+        {strandData.map((strand, si) =>
+          Array.from({ length: rings }, (_, ri) => {
+            const radius = ((ri + 1) * maxRadius) / (rings + 0.5);
+            const wobble = Math.sin(si * 3.1 + ri * 1.7) * (radius * 0.07);
+            const r = radius + wobble;
+            const x = origin.x + Math.cos(strand.angle) * r;
+            const y = origin.y + Math.sin(strand.angle) * r;
+            return (
+              <motion.circle
+                key={`dot-${si}-${ri}`}
+                cx={x}
+                cy={y}
+                r={2}
+                fill={color}
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+                transition={{
+                  duration: 0.15,
+                  delay: delay + 0.4 + ri * 0.04 + si * 0.02,
+                }}
+                viewport={{ once: true }}
+              />
+            );
+          })
+        )}
+
+        {/* Anchor dot at corner origin */}
         <motion.circle
-          cx={center}
-          cy={center}
-          r={4.5}
+          cx={origin.x}
+          cy={origin.y}
+          r={5}
           fill={color}
-          initial={animate ? { scale: 0 } : {}}
-          whileInView={animate ? { scale: 1 } : {}}
+          initial={{ scale: 0 }}
+          whileInView={{ scale: 1 }}
           transition={{ duration: 0.3, delay }}
           viewport={{ once: true }}
         />
-
-        {/* Small dots at intersections for web fluid look */}
-        {ringPaths.length > 0 &&
-          spokeLines.map((spoke, si) =>
-            Array.from({ length: rings }, (_, ri) => {
-              const radius = ((ri + 1) * maxRadius) / rings;
-              const wobble = Math.sin(si * 3 + ri * 2) * (radius * 0.06);
-              const r = radius + wobble;
-              const x = center + Math.cos(spoke.angle) * r;
-              const y = center + Math.sin(spoke.angle) * r;
-              return (
-                <motion.circle
-                  key={`dot-${si}-${ri}`}
-                  cx={x}
-                  cy={y}
-                  r={2.2}
-                  fill={color}
-                  initial={animate ? { scale: 0 } : {}}
-                  whileInView={animate ? { scale: 1 } : {}}
-                  transition={{
-                    duration: 0.2,
-                    delay: delay + 0.5 + ri * 0.05 + si * 0.02,
-                  }}
-                  viewport={{ once: true }}
-                />
-              );
-            })
-          )}
       </svg>
     </motion.div>
   );
 };
 
-// Strand that stretches between two points
-const WebStrand = ({
+// Loose strand that droops between edges
+const DroopStrand = ({
   className = "",
   color = "currentColor",
   opacity = 0.1,
@@ -185,34 +202,32 @@ const WebStrand = ({
   color?: string;
   opacity?: number;
   delay?: number;
-}) => {
-  return (
-    <motion.div
-      className={`absolute pointer-events-none ${className}`}
-      initial={{ scaleX: 0, opacity: 0 }}
-      whileInView={{ scaleX: 1, opacity }}
-      transition={{ duration: 1, delay, ease: [0.23, 1, 0.32, 1] }}
-      viewport={{ once: true, amount: 0.3 }}
-    >
-      <svg width="100%" height="24" viewBox="0 0 400 24" preserveAspectRatio="none">
-        <path
-          d="M0 12 Q 50 3, 100 12 Q 150 21, 200 12 Q 250 3, 300 12 Q 350 21, 400 12"
-          stroke={color}
-          strokeWidth={1.8}
-          fill="none"
-          strokeLinecap="round"
-        />
-        <path
-          d="M0 12 Q 80 6, 160 12 Q 240 18, 320 12 Q 360 8, 400 12"
-          stroke={color}
-          strokeWidth={1}
-          fill="none"
-          opacity={0.6}
-        />
-      </svg>
-    </motion.div>
-  );
-};
+}) => (
+  <motion.div
+    className={`absolute pointer-events-none ${className}`}
+    initial={{ scaleX: 0, opacity: 0 }}
+    whileInView={{ scaleX: 1, opacity }}
+    transition={{ duration: 0.8, delay, ease: [0.23, 1, 0.32, 1] }}
+    viewport={{ once: true, amount: 0.3 }}
+  >
+    <svg width="100%" height="30" viewBox="0 0 500 30" preserveAspectRatio="none">
+      <path
+        d="M0 2 Q 125 28, 250 8 Q 375 -12, 500 4"
+        stroke={color}
+        strokeWidth={1.5}
+        fill="none"
+        strokeLinecap="round"
+      />
+      <path
+        d="M0 6 Q 100 22, 200 10 Q 350 -2, 500 8"
+        stroke={color}
+        strokeWidth={0.8}
+        fill="none"
+        opacity={0.5}
+      />
+    </svg>
+  </motion.div>
+);
 
 interface SpiderWebBackgroundProps {
   variant?: "corners" | "scattered" | "sides";
@@ -224,18 +239,18 @@ interface SpiderWebBackgroundProps {
 const SpiderWebBackground = ({
   variant = "corners",
   color = "hsl(var(--primary))",
-  opacity = 0.12,
-  webSize = 350,
+  opacity = 0.18,
+  webSize = 420,
 }: SpiderWebBackgroundProps) => {
   if (variant === "corners") {
     return (
       <>
-        <SpiderWeb position="top-left" size={webSize} color={color} opacity={opacity} delay={0} />
-        <SpiderWeb position="bottom-right" size={webSize} color={color} opacity={opacity} delay={0.3} />
-        <WebStrand
-          className="top-[20%] left-0 right-0"
+        <CornerWeb corner="top-left" size={webSize} color={color} opacity={opacity} delay={0} />
+        <CornerWeb corner="bottom-right" size={webSize * 0.85} color={color} opacity={opacity * 0.8} delay={0.2} strands={8} rings={6} />
+        <DroopStrand
+          className="top-[15%] left-0 right-0"
           color={color}
-          opacity={opacity * 0.6}
+          opacity={opacity * 0.4}
           delay={0.5}
         />
       </>
@@ -245,36 +260,36 @@ const SpiderWebBackground = ({
   if (variant === "scattered") {
     return (
       <>
-        <SpiderWeb position="top-right" size={webSize * 0.8} color={color} opacity={opacity} delay={0.1} spokes={10} rings={5} />
-        <SpiderWeb position="bottom-left" size={webSize * 0.7} color={color} opacity={opacity * 0.8} delay={0.4} spokes={8} rings={4} />
-        <WebStrand
-          className="top-[40%] left-[10%] right-[10%]"
+        <CornerWeb corner="top-right" size={webSize * 0.9} color={color} opacity={opacity} delay={0.1} strands={9} rings={6} />
+        <CornerWeb corner="bottom-left" size={webSize * 0.75} color={color} opacity={opacity * 0.85} delay={0.3} strands={8} rings={5} />
+        <DroopStrand
+          className="top-[35%] left-[5%] right-[5%]"
           color={color}
-          opacity={opacity * 0.5}
-          delay={0.6}
+          opacity={opacity * 0.35}
+          delay={0.5}
         />
-        <WebStrand
-          className="bottom-[30%] left-[5%] right-[20%]"
+        <DroopStrand
+          className="bottom-[25%] left-[10%] right-[15%]"
           color={color}
-          opacity={opacity * 0.4}
-          delay={0.8}
+          opacity={opacity * 0.25}
+          delay={0.7}
         />
       </>
     );
   }
 
-  // sides
+  // sides — webs from all four corners
   return (
     <>
-      <SpiderWeb position="top-left" size={webSize * 0.6} color={color} opacity={opacity} delay={0} spokes={8} rings={4} />
-      <SpiderWeb position="top-right" size={webSize * 0.7} color={color} opacity={opacity * 0.9} delay={0.2} spokes={10} rings={5} />
-      <SpiderWeb position="bottom-left" size={webSize * 0.5} color={color} opacity={opacity * 0.7} delay={0.4} spokes={8} rings={3} />
-      <SpiderWeb position="bottom-right" size={webSize * 0.65} color={color} opacity={opacity * 0.8} delay={0.3} spokes={9} rings={4} />
-      <WebStrand
-        className="top-[50%] left-0 right-0"
+      <CornerWeb corner="top-left" size={webSize * 0.7} color={color} opacity={opacity} delay={0} strands={8} rings={5} />
+      <CornerWeb corner="top-right" size={webSize * 0.8} color={color} opacity={opacity * 0.9} delay={0.15} strands={9} rings={6} />
+      <CornerWeb corner="bottom-left" size={webSize * 0.6} color={color} opacity={opacity * 0.7} delay={0.3} strands={7} rings={4} />
+      <CornerWeb corner="bottom-right" size={webSize * 0.75} color={color} opacity={opacity * 0.8} delay={0.2} strands={8} rings={5} />
+      <DroopStrand
+        className="top-[45%] left-0 right-0"
         color={color}
-        opacity={opacity * 0.4}
-        delay={0.7}
+        opacity={opacity * 0.3}
+        delay={0.6}
       />
     </>
   );
