@@ -19,7 +19,29 @@ import {
   MessageCircle,
   Mail,
   ChevronRight,
+  Bot,
 } from "lucide-react";
+
+const agentsByCategory: Record<string, string[]> = {
+  ai: [
+    "Cursor / Aider", "Devin AI", "Replit Agent", "V0.dev", "Claude Code",
+    "GitHub Copilot", "Gumloop", "Stack AI", "Lovable",
+  ],
+  ecommerce: [
+    "Gorgias AI", "Tidio (Lyro AI)", "Fin (by Intercom)", "Ada CX", "Siena AI",
+    "Alhena AI", "Zendesk AI", "Klevu / Algolia AI", "Shopify Magic & Sidekick",
+  ],
+  marketing: [
+    "AdCreative.ai", "RedTrack", "Pecan AI", "Triple Whale (Moby Agents)",
+    "Surfer SEO (AI Mode)", "Jasper AI", "Apollo.io AI", "Lindy AI",
+    "Ava (by Artisan)", "SBL.so", "Clay / Claygent", "Second Brain Labs",
+    "11x.ai", "Respond.io", "ManyChat",
+  ],
+  automation: [
+    "Gorgias AI", "Tidio (Lyro AI)", "Fin (by Intercom)", "Ada CX",
+    "Apollo.io AI", "Lindy AI", "Respond.io", "ManyChat",
+  ],
+};
 
 const categories = [
   {
@@ -242,6 +264,37 @@ const OtherServicesSection = () => {
                 </motion.div>
               );
             })}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Floating AI Agent Badges */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`agents-${activeCategory}`}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.3, delay: 0.15 }}
+            className="mt-10 max-w-5xl mx-auto"
+          >
+            <p className="text-xs uppercase tracking-widest text-muted-foreground text-center mb-4 font-semibold">
+              AI Agents We Work With
+            </p>
+            <div className="flex flex-wrap justify-center gap-2.5">
+              {(agentsByCategory[activeCategory] || []).map((agent, i) => (
+                <motion.span
+                  key={agent}
+                  initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ duration: 0.25, delay: i * 0.04 }}
+                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium border backdrop-blur-sm
+                    ${colors.border} bg-card/60 hover:bg-card hover:scale-105 transition-all duration-200 cursor-default shadow-sm`}
+                >
+                  <Bot className={`w-3 h-3 ${colors.text} flex-shrink-0`} />
+                  {agent}
+                </motion.span>
+              ))}
+            </div>
           </motion.div>
         </AnimatePresence>
       </div>
