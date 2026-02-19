@@ -1,33 +1,37 @@
 import { Star, Quote } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import SpiderWebBackground from "@/components/SpiderWebBackground";
+import jessyKennedy from "@/assets/testimonials/jessy-kennedy.png";
+import marinaIrvin from "@/assets/testimonials/marina-irvin.png";
+import sarahAhmed from "@/assets/testimonials/sarah-ahmed.png";
+import rashidAli from "@/assets/testimonials/rashid-ali.png";
 
 const testimonials = [
   {
     name: "Jessy Kennedy",
     company: "Engel Lane",
-    image: "https://ui-avatars.com/api/?name=Jessy+Kennedy&background=3b82f6&color=fff",
+    image: jessyKennedy,
     rating: 5,
     text: "Webfluid transformed our vision into a stunning online store. The team's attention to detail and understanding of our brand was exceptional. Sales have increased by 200% since launch!",
   },
   {
     name: "Marina Irvin",
     company: "Hatchgal",
-    image: "https://ui-avatars.com/api/?name=Marina+Irvin&background=10b981&color=fff",
+    image: marinaIrvin,
     rating: 5,
     text: "Professional, responsive, and incredibly talented. They delivered our Shopify store ahead of schedule and the ongoing support has been invaluable for our business growth.",
   },
   {
     name: "Sarah Ahmed",
     company: "Lyra Modest",
-    image: "https://ui-avatars.com/api/?name=Sarah+Ahmed&background=8b5cf6&color=fff",
+    image: sarahAhmed,
     rating: 5,
     text: "The best decision we made for our online presence. The eCommerce site they built is beautiful, fast, and converts like crazy. Highly recommend their services!",
   },
   {
     name: "Rashid Ali",
     company: "Al Naseem Group",
-    image: "https://ui-avatars.com/api/?name=Rashid+Ali&background=f97316&color=fff",
+    image: rashidAli,
     rating: 5,
     text: "Excellent work on our corporate website. The team understood our requirements perfectly and delivered a modern, professional site that represents our brand well.",
   },
