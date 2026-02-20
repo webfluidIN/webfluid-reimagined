@@ -6,8 +6,8 @@ import QuoteDialog from "@/components/QuoteDialog";
 
 const navLinks = [
   { name: "Services", href: "/#services" },
-  { name: "AI Services", href: "/#other-services" },
   { name: "Portfolio", href: "/#portfolio" },
+  { name: "AI Services", href: "/#other-services" },
   { name: "Team", href: "/#team" },
   { name: "Process", href: "/#process" },
   { name: "FAQ", href: "/#faq" },
