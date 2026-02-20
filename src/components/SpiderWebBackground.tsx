@@ -92,7 +92,7 @@ const CornerWeb = ({
       style={{ transform: transformStyle[corner] }}
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
-      transition={{ duration: 0.3, delay }}
+      transition={{ duration: 0.8, delay }}
       viewport={{ once: true, amount: 0.1 }}
     >
       <svg
@@ -110,7 +110,7 @@ const CornerWeb = ({
           fill={color}
           initial={{ scale: 0, opacity: 0 }}
           whileInView={{ scale: [0, 2.5, 1], opacity: [0, 1, 1] }}
-          transition={{ duration: 0.4, delay, ease: "easeOut" }}
+          transition={{ duration: 1, delay, ease: "easeOut" }}
           viewport={{ once: true }}
         />
 
@@ -129,13 +129,13 @@ const CornerWeb = ({
             whileInView={{ pathLength: 1, opacity: [0, 1, 1] }}
             transition={{
               pathLength: {
-                duration: 0.35,
-                delay: delay + 0.15 + i * 0.06,
+                duration: 0.9,
+                delay: delay + 0.4 + i * 0.15,
                 ease: [0.16, 1, 0.3, 1],
               },
               opacity: {
-                duration: 0.1,
-                delay: delay + 0.15 + i * 0.06,
+                duration: 0.25,
+                delay: delay + 0.4 + i * 0.15,
               },
             }}
             viewport={{ once: true }}
@@ -155,13 +155,13 @@ const CornerWeb = ({
             whileInView={{ pathLength: 1, opacity: 1 }}
             transition={{
               pathLength: {
-                duration: 0.5,
-                delay: delay + 0.5 + i * 0.12,
+                duration: 1.2,
+                delay: delay + 1.2 + i * 0.3,
                 ease: [0.25, 1, 0.5, 1],
               },
               opacity: {
-                duration: 0.15,
-                delay: delay + 0.5 + i * 0.12,
+                duration: 0.4,
+                delay: delay + 1.2 + i * 0.3,
               },
             }}
             viewport={{ once: true }}
@@ -186,8 +186,8 @@ const CornerWeb = ({
                 initial={{ scale: 0, opacity: 0 }}
                 whileInView={{ scale: [0, 1.8, 1], opacity: 1 }}
                 transition={{
-                  duration: 0.25,
-                  delay: delay + 0.55 + ri * 0.12 + si * 0.03,
+                  duration: 0.6,
+                  delay: delay + 1.3 + ri * 0.3 + si * 0.07,
                   ease: "easeOut",
                 }}
                 viewport={{ once: true }}
@@ -206,7 +206,7 @@ const CornerWeb = ({
           strokeWidth={2}
           initial={{ scale: 0, opacity: 0.6 }}
           whileInView={{ scale: [0, 1.5], opacity: [0.6, 0] }}
-          transition={{ duration: 0.6, delay: delay + 0.05, ease: "easeOut" }}
+          transition={{ duration: 1.5, delay: delay + 0.1, ease: "easeOut" }}
           viewport={{ once: true }}
         />
       </svg>
@@ -230,7 +230,7 @@ const DroopStrand = ({
     className={`absolute pointer-events-none ${className}`}
     initial={{ opacity: 0 }}
     whileInView={{ opacity: 1 }}
-    transition={{ duration: 0.2, delay }}
+    transition={{ duration: 0.5, delay }}
     viewport={{ once: true, amount: 0.3 }}
   >
     <svg width="100%" height="30" viewBox="0 0 500 30" preserveAspectRatio="none">
@@ -244,8 +244,8 @@ const DroopStrand = ({
         initial={{ pathLength: 0 }}
         whileInView={{ pathLength: 1 }}
         transition={{
-          duration: 0.7,
-          delay: delay + 0.1,
+          duration: 1.8,
+          delay: delay + 0.2,
           ease: [0.16, 1, 0.3, 1],
         }}
         viewport={{ once: true }}
@@ -259,8 +259,8 @@ const DroopStrand = ({
         initial={{ pathLength: 0 }}
         whileInView={{ pathLength: 1 }}
         transition={{
-          duration: 0.6,
-          delay: delay + 0.3,
+          duration: 1.5,
+          delay: delay + 0.6,
           ease: [0.16, 1, 0.3, 1],
         }}
         viewport={{ once: true }}
