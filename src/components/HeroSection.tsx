@@ -82,8 +82,8 @@ const HeroSection = () => {
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </QuoteDialog>
-            <Button size="lg" variant="outline" className="px-8 py-6 text-lg font-semibold border-2 hover:bg-muted">
-              View Our Work
+            <Button size="lg" variant="outline" className="px-8 py-6 text-lg font-semibold border-2 hover:bg-muted" asChild>
+              <a href="/#portfolio">View Our Work</a>
             </Button>
           </div>
 
