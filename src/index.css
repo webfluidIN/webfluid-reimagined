@@ -167,3 +167,17 @@
 .animate-pulse-ring {
   animation: pulse-ring 2s ease-out infinite;
 }
+
+/* Hide the "Edit with Lovable" badge on published deployments */
+#lovable-badge,
+#lovable-badge-container,
+a[href*="lovable.dev"][href*="utm_source=lovable-badge"],
+a[href*="lovable.dev/?utm"],
+a[aria-label*="Lovable" i][href*="lovable.dev"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
