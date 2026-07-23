@@ -133,14 +133,30 @@ serve(async (req: Request): Promise<Response> => {
       });
     }
 
-    // Signed logo URL (30 days) if uploaded
+    // Signed logo URL (30 days) if uploaded + persist submission
     let logoLine = "";
     const logoPath = truncate(d.logoStoragePath, 500);
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const admin = createClient(supabaseUrl, serviceKey);
+
+    // Insert into DB (non-fatal if it fails)
+    try {
+      await admin.from("onboarding_submissions").insert({
+        full_name: fullName,
+        business_name: businessName,
+        email,
+        phone,
+        services,
+        data: d,
+        logo_storage_path: logoPath || null,
+      });
+    } catch (dbErr) {
+      console.error("DB insert error:", dbErr);
+    }
+
     if (logoPath) {
       try {
-        const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-        const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-        const admin = createClient(supabaseUrl, serviceKey);
         const { data: signed, error: signErr } = await admin.storage
           .from("onboarding-uploads")
           .createSignedUrl(logoPath, 60 * 60 * 24 * 30);
@@ -154,6 +170,7 @@ serve(async (req: Request): Promise<Response> => {
         logoLine = `${d.logoFileName || "logo"} (path: ${esc(logoPath)})`;
       }
     }
+
 
     const socialsPairs = Object.entries(d.socials ?? {})
       .filter(([, v]) => v)

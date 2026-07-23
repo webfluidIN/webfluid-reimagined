@@ -1,4 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+
 
 // Restrict CORS to known origins
 const ALLOWED_ORIGINS = [
@@ -135,6 +137,21 @@ const handler = async (req: Request): Promise<Response> => {
     const websiteTypeLabel =
       websiteType === "ecommerce" ? "E-Commerce Website" : "Business Website";
 
+    // Persist to DB (non-fatal)
+    try {
+      const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+      await admin.from("quote_submissions").insert({
+        name,
+        email,
+        phone,
+        service: websiteTypeLabel,
+        message: message || null,
+        data: { businessName, websiteType, message },
+      });
+    } catch (dbErr) {
+      console.error("DB insert error:", dbErr);
+    }
+
     const safe = {
       name: escapeHtml(name),
       phone: escapeHtml(phone),
@@ -143,6 +160,7 @@ const handler = async (req: Request): Promise<Response> => {
       websiteType: escapeHtml(websiteTypeLabel),
       message: message ? escapeHtml(message) : "",
     };
+
 
     const emailHtml = `
       <h2>New Quote Request from Webfluid Website</h2>
