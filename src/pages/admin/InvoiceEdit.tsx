@@ -57,7 +57,16 @@ const InvoiceEdit = () => {
 
   const save = async () => {
     if (!inv.client_id) return toast({ title: "Select a client", variant: "destructive" });
-    const payload = { ...inv, subtotal, tax_amount: taxAmount, total };
+    const payload: any = {
+      ...inv,
+      due_date: inv.due_date || null,
+      issue_date: inv.issue_date || new Date().toISOString().slice(0, 10),
+      tax_percent: Number(inv.tax_percent) || 0,
+      discount: Number(inv.discount) || 0,
+      subtotal,
+      tax_amount: taxAmount,
+      total,
+    };
     let invoiceId = id!;
     if (isNew) {
       const { data, error } = await supabase.from("invoices").insert(payload).select().single();
