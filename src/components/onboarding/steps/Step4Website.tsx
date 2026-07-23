@@ -123,21 +123,23 @@ const Step4Website = ({ data, update }: StepProps) => {
         )}
       </div>
 
-      <div className="space-y-2">
-        <Label>Hosting preference *</Label>
-        <RadioGroup value={data.hosting} onValueChange={(v) => update({ hosting: v })} className="space-y-2">
-          {[
-            { v: "standard", l: "Standard hosting — free for 1 year with our development package" },
-            { v: "premium_cloudways", l: "Premium (Cloudways) — extra cost, better performance" },
-            { v: "own", l: "I already have my own hosting" },
-          ].map((o) => (
-            <label key={o.v} className="flex items-center gap-2 p-3 border rounded-lg cursor-pointer hover:bg-muted/50">
-              <RadioGroupItem value={o.v} />
-              <span className="text-sm">{o.l}</span>
-            </label>
-          ))}
-        </RadioGroup>
-      </div>
+      {showHosting && (
+        <div className="space-y-2">
+          <Label>Hosting preference *</Label>
+          <RadioGroup value={data.hosting} onValueChange={(v) => update({ hosting: v })} className="space-y-2">
+            {[
+              { v: "standard", l: "Standard hosting — free for 1 year with our development package" },
+              { v: "premium_cloudways", l: "Premium (Cloudways) — extra cost, better performance" },
+              { v: "own", l: "I already have my own hosting" },
+            ].map((o) => (
+              <label key={o.v} className="flex items-center gap-2 p-3 border rounded-lg cursor-pointer hover:bg-muted/50">
+                <RadioGroupItem value={o.v} />
+                <span className="text-sm">{o.l}</span>
+              </label>
+            ))}
+          </RadioGroup>
+        </div>
+      )}
 
       <div className="grid md:grid-cols-2 gap-4">
         <div className="space-y-1.5">
