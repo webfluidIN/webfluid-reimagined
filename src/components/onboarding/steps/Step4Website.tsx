@@ -8,6 +8,11 @@ import { StepProps } from "../OnboardingWizard";
 
 const Step4Website = ({ data, update }: StepProps) => {
   const isEcom = data.services.includes("ecommerce_website");
+  const isWordPress = data.platform === "wordpress";
+  const isShopify = data.platform === "shopify";
+  const showPageScope = !isShopify && data.platform !== "woocommerce";
+  const showEcomSpecifics = isEcom && !isWordPress;
+  const showHosting = !isShopify;
   const togglePay = (v: string) => {
     const has = data.ecomPaymentGateways.includes(v);
     update({ ecomPaymentGateways: has ? data.ecomPaymentGateways.filter((x) => x !== v) : [...data.ecomPaymentGateways, v] });
@@ -37,29 +42,31 @@ const Step4Website = ({ data, update }: StepProps) => {
         </RadioGroup>
       </div>
 
-      <div className="space-y-2">
-        <Label>Page scope *</Label>
-        <RadioGroup value={data.pageScope} onValueChange={(v) => update({ pageScope: v })} className="space-y-2">
-          {[
-            { v: "single", l: "Single page website" },
-            { v: "basic5", l: "Basic 5-page (About, Contact, Services, Privacy, Terms)" },
-            { v: "more", l: "5+ pages (extra product/service or custom pages)" },
-          ].map((o) => (
-            <label key={o.v} className="flex items-center gap-2 p-3 border rounded-lg cursor-pointer hover:bg-muted/50">
-              <RadioGroupItem value={o.v} id={`sc-${o.v}`} />
-              <span className="text-sm">{o.l}</span>
-            </label>
-          ))}
-        </RadioGroup>
-        {data.pageScope === "more" && (
-          <div className="grid md:grid-cols-2 gap-3 pt-2">
-            <Input placeholder="Approx total page count" value={data.extraPagesCount} onChange={(e) => update({ extraPagesCount: e.target.value })} maxLength={20} />
-            <Input placeholder="Extra pages (e.g. Blog, Careers)" value={data.extraPagesList} onChange={(e) => update({ extraPagesList: e.target.value })} maxLength={300} />
-          </div>
-        )}
-      </div>
+      {showPageScope && (
+        <div className="space-y-2">
+          <Label>Page scope *</Label>
+          <RadioGroup value={data.pageScope} onValueChange={(v) => update({ pageScope: v })} className="space-y-2">
+            {[
+              { v: "single", l: "Single page website" },
+              { v: "basic5", l: "Basic 5-page (About, Contact, Services, Privacy, Terms)" },
+              { v: "more", l: "5+ pages (extra product/service or custom pages)" },
+            ].map((o) => (
+              <label key={o.v} className="flex items-center gap-2 p-3 border rounded-lg cursor-pointer hover:bg-muted/50">
+                <RadioGroupItem value={o.v} id={`sc-${o.v}`} />
+                <span className="text-sm">{o.l}</span>
+              </label>
+            ))}
+          </RadioGroup>
+          {data.pageScope === "more" && (
+            <div className="grid md:grid-cols-2 gap-3 pt-2">
+              <Input placeholder="Approx total page count" value={data.extraPagesCount} onChange={(e) => update({ extraPagesCount: e.target.value })} maxLength={20} />
+              <Input placeholder="Extra pages (e.g. Blog, Careers)" value={data.extraPagesList} onChange={(e) => update({ extraPagesList: e.target.value })} maxLength={300} />
+            </div>
+          )}
+        </div>
+      )}
 
-      {isEcom && (
+      {showEcomSpecifics && (
         <div className="p-4 border rounded-xl space-y-4 bg-muted/30">
           <div className="font-semibold">E-Commerce specifics</div>
           <div className="grid md:grid-cols-2 gap-3">
@@ -116,21 +123,23 @@ const Step4Website = ({ data, update }: StepProps) => {
         )}
       </div>
 
-      <div className="space-y-2">
-        <Label>Hosting preference *</Label>
-        <RadioGroup value={data.hosting} onValueChange={(v) => update({ hosting: v })} className="space-y-2">
-          {[
-            { v: "standard", l: "Standard hosting — free for 1 year with our development package" },
-            { v: "premium_cloudways", l: "Premium (Cloudways) — extra cost, better performance" },
-            { v: "own", l: "I already have my own hosting" },
-          ].map((o) => (
-            <label key={o.v} className="flex items-center gap-2 p-3 border rounded-lg cursor-pointer hover:bg-muted/50">
-              <RadioGroupItem value={o.v} />
-              <span className="text-sm">{o.l}</span>
-            </label>
-          ))}
-        </RadioGroup>
-      </div>
+      {showHosting && (
+        <div className="space-y-2">
+          <Label>Hosting preference *</Label>
+          <RadioGroup value={data.hosting} onValueChange={(v) => update({ hosting: v })} className="space-y-2">
+            {[
+              { v: "standard", l: "Standard hosting — free for 1 year with our development package" },
+              { v: "premium_cloudways", l: "Premium (Cloudways) — extra cost, better performance" },
+              { v: "own", l: "I already have my own hosting" },
+            ].map((o) => (
+              <label key={o.v} className="flex items-center gap-2 p-3 border rounded-lg cursor-pointer hover:bg-muted/50">
+                <RadioGroupItem value={o.v} />
+                <span className="text-sm">{o.l}</span>
+              </label>
+            ))}
+          </RadioGroup>
+        </div>
+      )}
 
       <div className="grid md:grid-cols-2 gap-4">
         <div className="space-y-1.5">

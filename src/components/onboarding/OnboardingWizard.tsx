@@ -68,9 +68,11 @@ const STEPS: StepDef[] = [
     render: (p) => <Step4Website {...p} />,
     validate: (d) => {
       if (!d.platform) return "Select a platform preference";
-      if (!d.pageScope) return "Select a page scope";
+      const isShopify = d.platform === "shopify";
+      const isWoo = d.platform === "woocommerce";
+      if (!isShopify && !isWoo && !d.pageScope) return "Select a page scope";
       if (!d.domainStatus) return "Let us know about your domain";
-      if (!d.hosting) return "Select a hosting preference";
+      if (!isShopify && !d.hosting) return "Select a hosting preference";
       return null;
     },
     showIf: needsWebsite,

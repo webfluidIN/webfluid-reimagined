@@ -240,12 +240,22 @@ serve(async (req: Request): Promise<Response> => {
 
     const subject = `New Onboarding: ${businessName} — ${services.slice(0, 3).join(", ")}`;
 
-    const brevoRes = await fetch("https://api.brevo.com/v3/smtp/email", {
+    const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
+    if (!lovableApiKey) {
+      console.error("LOVABLE_API_KEY missing");
+      return new Response(JSON.stringify({ error: "Service temporarily unavailable." }), {
+        status: 503,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    const brevoRes = await fetch("https://connector-gateway.lovable.dev/brevo/smtp/email", {
       method: "POST",
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "api-key": brevoApiKey,
+        "Authorization": `Bearer ${lovableApiKey}`,
+        "X-Connection-Api-Key": brevoApiKey,
       },
       body: JSON.stringify({
         sender: { name: "Webfluid Onboarding", email: "noreply@webfluid.in" },
