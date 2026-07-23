@@ -11,7 +11,7 @@ const navLinks = [
   { name: "Team", href: "/#team" },
   { name: "Process", href: "/#process" },
   { name: "FAQ", href: "/#faq" },
-  { name: "Onboarding", href: "/onboarding" },
+  
 ];
 
 const Navbar = () => {
