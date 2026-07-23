@@ -42,29 +42,31 @@ const Step4Website = ({ data, update }: StepProps) => {
         </RadioGroup>
       </div>
 
-      <div className="space-y-2">
-        <Label>Page scope *</Label>
-        <RadioGroup value={data.pageScope} onValueChange={(v) => update({ pageScope: v })} className="space-y-2">
-          {[
-            { v: "single", l: "Single page website" },
-            { v: "basic5", l: "Basic 5-page (About, Contact, Services, Privacy, Terms)" },
-            { v: "more", l: "5+ pages (extra product/service or custom pages)" },
-          ].map((o) => (
-            <label key={o.v} className="flex items-center gap-2 p-3 border rounded-lg cursor-pointer hover:bg-muted/50">
-              <RadioGroupItem value={o.v} id={`sc-${o.v}`} />
-              <span className="text-sm">{o.l}</span>
-            </label>
-          ))}
-        </RadioGroup>
-        {data.pageScope === "more" && (
-          <div className="grid md:grid-cols-2 gap-3 pt-2">
-            <Input placeholder="Approx total page count" value={data.extraPagesCount} onChange={(e) => update({ extraPagesCount: e.target.value })} maxLength={20} />
-            <Input placeholder="Extra pages (e.g. Blog, Careers)" value={data.extraPagesList} onChange={(e) => update({ extraPagesList: e.target.value })} maxLength={300} />
-          </div>
-        )}
-      </div>
+      {showPageScope && (
+        <div className="space-y-2">
+          <Label>Page scope *</Label>
+          <RadioGroup value={data.pageScope} onValueChange={(v) => update({ pageScope: v })} className="space-y-2">
+            {[
+              { v: "single", l: "Single page website" },
+              { v: "basic5", l: "Basic 5-page (About, Contact, Services, Privacy, Terms)" },
+              { v: "more", l: "5+ pages (extra product/service or custom pages)" },
+            ].map((o) => (
+              <label key={o.v} className="flex items-center gap-2 p-3 border rounded-lg cursor-pointer hover:bg-muted/50">
+                <RadioGroupItem value={o.v} id={`sc-${o.v}`} />
+                <span className="text-sm">{o.l}</span>
+              </label>
+            ))}
+          </RadioGroup>
+          {data.pageScope === "more" && (
+            <div className="grid md:grid-cols-2 gap-3 pt-2">
+              <Input placeholder="Approx total page count" value={data.extraPagesCount} onChange={(e) => update({ extraPagesCount: e.target.value })} maxLength={20} />
+              <Input placeholder="Extra pages (e.g. Blog, Careers)" value={data.extraPagesList} onChange={(e) => update({ extraPagesList: e.target.value })} maxLength={300} />
+            </div>
+          )}
+        </div>
+      )}
 
-      {isEcom && (
+      {showEcomSpecifics && (
         <div className="p-4 border rounded-xl space-y-4 bg-muted/30">
           <div className="font-semibold">E-Commerce specifics</div>
           <div className="grid md:grid-cols-2 gap-3">
