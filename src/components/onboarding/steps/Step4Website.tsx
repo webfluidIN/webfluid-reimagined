@@ -8,6 +8,11 @@ import { StepProps } from "../OnboardingWizard";
 
 const Step4Website = ({ data, update }: StepProps) => {
   const isEcom = data.services.includes("ecommerce_website");
+  const isWordPress = data.platform === "wordpress";
+  const isShopify = data.platform === "shopify";
+  const showPageScope = !isShopify && data.platform !== "woocommerce";
+  const showEcomSpecifics = isEcom && !isWordPress;
+  const showHosting = !isShopify;
   const togglePay = (v: string) => {
     const has = data.ecomPaymentGateways.includes(v);
     update({ ecomPaymentGateways: has ? data.ecomPaymentGateways.filter((x) => x !== v) : [...data.ecomPaymentGateways, v] });
