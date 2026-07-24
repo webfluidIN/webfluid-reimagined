@@ -22,6 +22,7 @@ import InvoiceEdit from "./pages/admin/InvoiceEdit";
 import InvoiceDetail from "./pages/admin/InvoiceDetail";
 import Renewals from "./pages/admin/Renewals";
 import Settings from "./pages/admin/Settings";
+import CompanySettings from "./pages/admin/CompanySettings";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +52,7 @@ const App = () => (
               <Route path="invoices/:id/edit" element={<InvoiceEdit />} />
               <Route path="renewals" element={<Renewals />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="company-settings" element={<CompanySettings />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

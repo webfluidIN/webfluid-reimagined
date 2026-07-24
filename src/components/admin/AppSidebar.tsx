@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { LayoutDashboard, Inbox, FileText, Users, Receipt, RefreshCw, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, Inbox, FileText, Users, Receipt, RefreshCw, Settings, LogOut, Palette } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -57,6 +57,14 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild isActive={pathname === "/admin/company-settings"}>
+              <NavLink to="/admin/company-settings" className="flex items-center gap-2">
+                <Palette className="h-4 w-4" />
+                {!collapsed && <span>Invoice Settings</span>}
+              </NavLink>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild isActive={pathname === "/admin/settings"}>
               <NavLink to="/admin/settings" className="flex items-center gap-2">
