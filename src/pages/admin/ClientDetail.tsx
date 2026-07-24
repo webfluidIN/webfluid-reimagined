@@ -37,7 +37,8 @@ const ClientDetail = () => {
     const { error } = await supabase.from("clients").update({
       full_name: client.full_name, business_name: client.business_name, email: client.email, phone: client.phone,
       whatsapp: client.whatsapp, country: client.country, city: client.city, website: client.website, notes: client.notes,
-    }).eq("id", id!);
+      address: client.address,
+    } as any).eq("id", id!);
     if (error) return toast({ title: "Failed", description: error.message, variant: "destructive" });
     toast({ title: "Saved" });
   };
