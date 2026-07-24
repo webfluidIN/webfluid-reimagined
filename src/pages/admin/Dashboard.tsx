@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Inbox, FileText, Users, RefreshCw, Receipt } from "lucide-react";
@@ -39,6 +40,11 @@ const Dashboard = () => {
   const [recent, setRecent] = useState<any[]>([]);
 
   useEffect(() => {
+    document.title = "Dashboard - Webfluid";
+  }, []);
+
+  useEffect(() => {
+
     (async () => {
       const in30 = new Date();
       in30.setDate(in30.getDate() + 30);

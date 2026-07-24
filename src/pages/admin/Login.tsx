@@ -23,8 +23,13 @@ const AdminLogin = () => {
   const from = (loc.state as any)?.from || "/admin";
 
   useEffect(() => {
+    document.title = "Login - Webfluid";
+  }, []);
+
+  useEffect(() => {
     if (!loadingAuth && user && isStaff) nav(from, { replace: true });
   }, [user, isStaff, loadingAuth, nav, from]);
+
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
