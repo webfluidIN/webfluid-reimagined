@@ -58,7 +58,7 @@ const InvoiceEdit = () => {
   const total = subtotal + taxAmount - (Number(inv.discount) || 0);
 
   const save = async () => {
-    if (!inv.client_id) return toast({ title: "Select a client", variant: "destructive" });
+    if (!inv.client_id || !UUID_RE.test(inv.client_id)) return toast({ title: "Select a client", variant: "destructive" });
     const payload: any = {
       ...inv,
       due_date: inv.due_date || null,
