@@ -19,7 +19,7 @@ const genNumber = () => {
 
 const InvoiceEdit = () => {
   const { id } = useParams();
-  const isNew = id === "new";
+  const isNew = !id || id === "new";
   const nav = useNavigate();
   const { toast } = useToast();
   const [sp] = useSearchParams();
@@ -69,7 +69,7 @@ const InvoiceEdit = () => {
       tax_amount: taxAmount,
       total,
     };
-    let invoiceId = id!;
+    let invoiceId = id ?? "";
     if (isNew) {
       const { data, error } = await supabase.from("invoices").insert(payload).select().single();
       if (error) return toast({ title: "Failed", description: error.message, variant: "destructive" });
