@@ -6,6 +6,7 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -13,6 +14,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/useAuth";
+import webfluidLogo from "@/assets/webfluid-logo.png";
 
 const items = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard, end: true },
