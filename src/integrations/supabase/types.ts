@@ -140,6 +140,45 @@ export type Database = {
         }
         Relationships: []
       }
+      email_provider_settings: {
+        Row: {
+          api_base_url: string | null
+          api_key: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          provider: string
+          reply_to_email: string | null
+          sender_email: string
+          sender_name: string
+          updated_at: string
+        }
+        Insert: {
+          api_base_url?: string | null
+          api_key?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          provider?: string
+          reply_to_email?: string | null
+          sender_email?: string
+          sender_name?: string
+          updated_at?: string
+        }
+        Update: {
+          api_base_url?: string | null
+          api_key?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          provider?: string
+          reply_to_email?: string | null
+          sender_email?: string
+          sender_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       invoice_items: {
         Row: {
           amount: number
