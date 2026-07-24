@@ -24,8 +24,10 @@ const InvoiceEdit = () => {
   const { toast } = useToast();
   const [sp] = useSearchParams();
   const [clients, setClients] = useState<any[]>([]);
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const initialClient = sp.get("client");
   const [inv, setInv] = useState<any>({
-    client_id: sp.get("client") || "",
+    client_id: initialClient && UUID_RE.test(initialClient) ? initialClient : "",
     invoice_number: genNumber(),
     issue_date: new Date().toISOString().slice(0, 10),
     due_date: "",
