@@ -5,16 +5,27 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus } from "lucide-react";
+import { Plus, Pencil } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+const emptyForm = {
+  full_name: "",
+  business_name: "",
+  email: "",
+  phone: "",
+  address: "",
+  country: "",
+};
 
 const Clients = () => {
   const { toast } = useToast();
   const [rows, setRows] = useState<any[]>([]);
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ full_name: "", business_name: "", email: "", phone: "" });
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState<any>(emptyForm);
 
   const load = async () => {
     const { data } = await supabase.from("clients").select("*").order("created_at", { ascending: false });
@@ -22,15 +33,45 @@ const Clients = () => {
   };
   useEffect(() => { load(); }, []);
 
-  const create = async () => {
+  const openNew = () => {
+    setEditingId(null);
+    setForm(emptyForm);
+    setOpen(true);
+  };
+
+  const openEdit = (row: any) => {
+    setEditingId(row.id);
+    setForm({
+      full_name: row.full_name ?? "",
+      business_name: row.business_name ?? "",
+      email: row.email ?? "",
+      phone: row.phone ?? "",
+      address: row.address ?? "",
+      country: row.country ?? "",
+    });
+    setOpen(true);
+  };
+
+  const submit = async () => {
     if (!form.full_name || !form.business_name || !form.email) {
       return toast({ title: "Fill required fields", variant: "destructive" });
     }
-    const { error } = await supabase.from("clients").insert(form);
+    const payload: any = {
+      full_name: form.full_name,
+      business_name: form.business_name,
+      email: form.email,
+      phone: form.phone || null,
+      address: form.address || null,
+      country: form.country || null,
+    };
+    const { error } = editingId
+      ? await supabase.from("clients").update(payload).eq("id", editingId)
+      : await supabase.from("clients").insert(payload);
     if (error) return toast({ title: "Failed", description: error.message, variant: "destructive" });
-    toast({ title: "Client added" });
+    toast({ title: editingId ? "Client updated" : "Client added" });
     setOpen(false);
-    setForm({ full_name: "", business_name: "", email: "", phone: "" });
+    setEditingId(null);
+    setForm(emptyForm);
     load();
   };
 
@@ -42,18 +83,20 @@ const Clients = () => {
     <div className="max-w-6xl space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-display font-bold">Clients</h2>
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditingId(null); setForm(emptyForm); } }}>
           <DialogTrigger asChild>
-            <Button><Plus className="w-4 h-4 mr-2" /> Add client</Button>
+            <Button onClick={openNew}><Plus className="w-4 h-4 mr-2" /> Add client</Button>
           </DialogTrigger>
           <DialogContent>
-            <DialogHeader><DialogTitle>New client</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{editingId ? "Edit client" : "New client"}</DialogTitle></DialogHeader>
             <div className="space-y-3">
               <div><Label>Full name *</Label><Input value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} /></div>
               <div><Label>Business *</Label><Input value={form.business_name} onChange={(e) => setForm({ ...form, business_name: e.target.value })} /></div>
               <div><Label>Email *</Label><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
               <div><Label>Phone</Label><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
-              <Button className="w-full" onClick={create}>Create</Button>
+              <div><Label>Address (optional)</Label><Textarea rows={2} value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /></div>
+              <div><Label>Country (optional)</Label><Input value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} /></div>
+              <Button className="w-full" onClick={submit}>{editingId ? "Save changes" : "Create"}</Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -72,6 +115,7 @@ const Clients = () => {
                   <th className="text-left py-2 px-2">Contact</th>
                   <th className="text-left py-2 px-2">Location</th>
                   <th className="text-left py-2 px-2">Added</th>
+                  <th className="text-right py-2 px-2">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -84,6 +128,11 @@ const Clients = () => {
                     <td className="py-3 px-2 text-xs">{r.email}<div className="text-muted-foreground">{r.phone}</div></td>
                     <td className="py-3 px-2 text-xs">{[r.city, r.country].filter(Boolean).join(", ")}</td>
                     <td className="py-3 px-2 text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</td>
+                    <td className="py-3 px-2 text-right">
+                      <Button size="sm" variant="ghost" onClick={() => openEdit(r)}>
+                        <Pencil className="w-3.5 h-3.5 mr-1" /> Edit
+                      </Button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
