@@ -33,9 +33,17 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
+      <SidebarHeader>
+        <div className="flex items-center justify-center px-2 py-2">
+          <img
+            src={webfluidLogo}
+            alt="Webfluid"
+            className={collapsed ? "h-6 w-auto" : "h-8 w-auto"}
+          />
+        </div>
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Admin</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => {
