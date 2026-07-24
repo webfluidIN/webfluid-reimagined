@@ -62,6 +62,84 @@ export type Database = {
         }
         Relationships: []
       }
+      company_settings: {
+        Row: {
+          address: string | null
+          bank_details: string | null
+          city: string | null
+          company_name: string
+          country: string | null
+          created_at: string
+          email: string | null
+          email_from_name: string
+          footer_notes: string | null
+          id: string
+          invoice_email_body: string
+          invoice_email_subject: string
+          invoice_template: string
+          logo_url: string | null
+          phone: string | null
+          primary_color: string
+          quote_email_body: string
+          quote_email_subject: string
+          quote_template: string
+          reply_to_email: string | null
+          tax_id: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          bank_details?: string | null
+          city?: string | null
+          company_name?: string
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          email_from_name?: string
+          footer_notes?: string | null
+          id?: string
+          invoice_email_body?: string
+          invoice_email_subject?: string
+          invoice_template?: string
+          logo_url?: string | null
+          phone?: string | null
+          primary_color?: string
+          quote_email_body?: string
+          quote_email_subject?: string
+          quote_template?: string
+          reply_to_email?: string | null
+          tax_id?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          bank_details?: string | null
+          city?: string | null
+          company_name?: string
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          email_from_name?: string
+          footer_notes?: string | null
+          id?: string
+          invoice_email_body?: string
+          invoice_email_subject?: string
+          invoice_template?: string
+          logo_url?: string | null
+          phone?: string | null
+          primary_color?: string
+          quote_email_body?: string
+          quote_email_subject?: string
+          quote_template?: string
+          reply_to_email?: string | null
+          tax_id?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       invoice_items: {
         Row: {
           amount: number
@@ -106,57 +184,72 @@ export type Database = {
       invoices: {
         Row: {
           client_id: string
+          converted_from_id: string | null
           created_at: string
           currency: string
           discount: number
+          document_type: string
           due_date: string | null
           id: string
           invoice_number: string
           issue_date: string
           notes: string | null
           paid_at: string | null
+          sent_at: string | null
+          sent_to_email: string | null
           status: Database["public"]["Enums"]["invoice_status"]
           subtotal: number
           tax_amount: number
           tax_percent: number
           total: number
           updated_at: string
+          valid_until: string | null
         }
         Insert: {
           client_id: string
+          converted_from_id?: string | null
           created_at?: string
           currency?: string
           discount?: number
+          document_type?: string
           due_date?: string | null
           id?: string
           invoice_number: string
           issue_date?: string
           notes?: string | null
           paid_at?: string | null
+          sent_at?: string | null
+          sent_to_email?: string | null
           status?: Database["public"]["Enums"]["invoice_status"]
           subtotal?: number
           tax_amount?: number
           tax_percent?: number
           total?: number
           updated_at?: string
+          valid_until?: string | null
         }
         Update: {
           client_id?: string
+          converted_from_id?: string | null
           created_at?: string
           currency?: string
           discount?: number
+          document_type?: string
           due_date?: string | null
           id?: string
           invoice_number?: string
           issue_date?: string
           notes?: string | null
           paid_at?: string | null
+          sent_at?: string | null
+          sent_to_email?: string | null
           status?: Database["public"]["Enums"]["invoice_status"]
           subtotal?: number
           tax_amount?: number
           tax_percent?: number
           total?: number
           updated_at?: string
+          valid_until?: string | null
         }
         Relationships: [
           {
@@ -164,6 +257,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_converted_from_id_fkey"
+            columns: ["converted_from_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
             referencedColumns: ["id"]
           },
         ]

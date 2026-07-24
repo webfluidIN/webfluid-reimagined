@@ -12,10 +12,13 @@ import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 
 interface Item { id?: string; description: string; quantity: number; unit_price: number; }
 
-const genNumber = () => {
+const genNumber = (type: "invoice" | "quote") => {
   const d = new Date();
-  return `INV-${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}-${Math.floor(Math.random() * 9000 + 1000)}`;
+  const prefix = type === "quote" ? "Q" : "INV";
+  return `${prefix}-${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}-${Math.floor(Math.random() * 9000 + 1000)}`;
 };
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const InvoiceEdit = () => {
   const { id } = useParams();
@@ -23,14 +26,16 @@ const InvoiceEdit = () => {
   const nav = useNavigate();
   const { toast } = useToast();
   const [sp] = useSearchParams();
+  const initialType: "invoice" | "quote" = sp.get("type") === "quote" ? "quote" : "invoice";
   const [clients, setClients] = useState<any[]>([]);
-  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   const initialClient = sp.get("client");
   const [inv, setInv] = useState<any>({
     client_id: initialClient && UUID_RE.test(initialClient) ? initialClient : "",
-    invoice_number: genNumber(),
+    document_type: initialType,
+    invoice_number: genNumber(initialType),
     issue_date: new Date().toISOString().slice(0, 10),
     due_date: "",
+    valid_until: "",
     currency: "INR",
     tax_percent: 0,
     discount: 0,
@@ -53,6 +58,10 @@ const InvoiceEdit = () => {
     }
   }, [id, isNew]);
 
+  const isQuote = inv.document_type === "quote";
+  const label = isQuote ? "Quotation" : "Invoice";
+  const backHref = isQuote ? "/admin/invoices?tab=quotes" : "/admin/invoices";
+
   const subtotal = useMemo(() => items.reduce((a, it) => a + it.quantity * it.unit_price, 0), [items]);
   const taxAmount = subtotal * (Number(inv.tax_percent) || 0) / 100;
   const total = subtotal + taxAmount - (Number(inv.discount) || 0);
@@ -61,7 +70,8 @@ const InvoiceEdit = () => {
     if (!inv.client_id || !UUID_RE.test(inv.client_id)) return toast({ title: "Select a client", variant: "destructive" });
     const payload: any = {
       ...inv,
-      due_date: inv.due_date || null,
+      due_date: isQuote ? null : (inv.due_date || null),
+      valid_until: isQuote ? (inv.valid_until || null) : null,
       issue_date: inv.issue_date || new Date().toISOString().slice(0, 10),
       tax_percent: Number(inv.tax_percent) || 0,
       discount: Number(inv.discount) || 0,
@@ -97,10 +107,10 @@ const InvoiceEdit = () => {
 
   return (
     <div className="max-w-4xl space-y-4">
-      <Link to="/admin/invoices" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary">
+      <Link to={backHref} className="inline-flex items-center text-sm text-muted-foreground hover:text-primary">
         <ArrowLeft className="w-4 h-4 mr-1" /> Back
       </Link>
-      <h2 className="text-2xl font-display font-bold">{isNew ? "New Invoice" : "Edit Invoice"}</h2>
+      <h2 className="text-2xl font-display font-bold">{isNew ? `New ${label}` : `Edit ${label}`}</h2>
 
       <Card className="p-5 space-y-4">
         <div className="grid md:grid-cols-2 gap-3">
@@ -113,9 +123,13 @@ const InvoiceEdit = () => {
               </SelectContent>
             </Select>
           </div>
-          <div><Label>Invoice #</Label><Input value={inv.invoice_number} onChange={(e) => setInv({ ...inv, invoice_number: e.target.value })} /></div>
+          <div><Label>{label} #</Label><Input value={inv.invoice_number} onChange={(e) => setInv({ ...inv, invoice_number: e.target.value })} /></div>
           <div><Label>Issue date</Label><Input type="date" value={inv.issue_date} onChange={(e) => setInv({ ...inv, issue_date: e.target.value })} /></div>
-          <div><Label>Due date</Label><Input type="date" value={inv.due_date || ""} onChange={(e) => setInv({ ...inv, due_date: e.target.value })} /></div>
+          {isQuote ? (
+            <div><Label>Valid until</Label><Input type="date" value={inv.valid_until || ""} onChange={(e) => setInv({ ...inv, valid_until: e.target.value })} /></div>
+          ) : (
+            <div><Label>Due date</Label><Input type="date" value={inv.due_date || ""} onChange={(e) => setInv({ ...inv, due_date: e.target.value })} /></div>
+          )}
           <div><Label>Currency</Label><Input value={inv.currency} onChange={(e) => setInv({ ...inv, currency: e.target.value })} /></div>
           <div>
             <Label>Status</Label>
@@ -124,9 +138,10 @@ const InvoiceEdit = () => {
               <SelectContent>
                 <SelectItem value="draft">Draft</SelectItem>
                 <SelectItem value="sent">Sent</SelectItem>
-                <SelectItem value="paid">Paid</SelectItem>
-                <SelectItem value="overdue">Overdue</SelectItem>
-                <SelectItem value="void">Void</SelectItem>
+                {!isQuote && <SelectItem value="paid">Paid</SelectItem>}
+                {!isQuote && <SelectItem value="overdue">Overdue</SelectItem>}
+                {isQuote && <SelectItem value="paid">Accepted</SelectItem>}
+                <SelectItem value="void">{isQuote ? "Declined" : "Void"}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -170,7 +185,7 @@ const InvoiceEdit = () => {
         <Textarea rows={3} value={inv.notes || ""} onChange={(e) => setInv({ ...inv, notes: e.target.value })} />
       </Card>
 
-      <Button onClick={save} size="lg" className="gradient-bg">Save invoice</Button>
+      <Button onClick={save} size="lg" className="gradient-bg">Save {label.toLowerCase()}</Button>
     </div>
   );
 };
