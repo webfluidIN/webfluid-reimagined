@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 const Onboarding = () => {
   useEffect(() => {
-    document.title = "Client Onboarding | Webfluid";
+    document.title = "Onboarding - Webfluid";
     const desc = document.querySelector('meta[name="description"]');
     if (desc) desc.setAttribute("content", "Tell us about your project — our step-by-step onboarding form for web development, SEO, Google Ads and Meta Ads clients.");
   }, []);
