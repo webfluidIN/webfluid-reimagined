@@ -1,7 +1,12 @@
+import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 const PrivacyPolicy = () => {
+  useEffect(() => {
+    document.title = "Privacy Policy - Webfluid";
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
