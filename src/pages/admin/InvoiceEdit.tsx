@@ -24,8 +24,10 @@ const InvoiceEdit = () => {
   const { toast } = useToast();
   const [sp] = useSearchParams();
   const [clients, setClients] = useState<any[]>([]);
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const initialClient = sp.get("client");
   const [inv, setInv] = useState<any>({
-    client_id: sp.get("client") || "",
+    client_id: initialClient && UUID_RE.test(initialClient) ? initialClient : "",
     invoice_number: genNumber(),
     issue_date: new Date().toISOString().slice(0, 10),
     due_date: "",
@@ -56,7 +58,7 @@ const InvoiceEdit = () => {
   const total = subtotal + taxAmount - (Number(inv.discount) || 0);
 
   const save = async () => {
-    if (!inv.client_id) return toast({ title: "Select a client", variant: "destructive" });
+    if (!inv.client_id || !UUID_RE.test(inv.client_id)) return toast({ title: "Select a client", variant: "destructive" });
     const payload: any = {
       ...inv,
       due_date: inv.due_date || null,
