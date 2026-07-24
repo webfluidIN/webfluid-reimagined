@@ -23,6 +23,7 @@ import InvoiceDetail from "./pages/admin/InvoiceDetail";
 import Renewals from "./pages/admin/Renewals";
 import Settings from "./pages/admin/Settings";
 import CompanySettings from "./pages/admin/CompanySettings";
+import EmailProviderSettings from "./pages/admin/EmailProviderSettings";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,7 @@ const App = () => (
               <Route path="renewals" element={<Renewals />} />
               <Route path="settings" element={<Settings />} />
               <Route path="company-settings" element={<CompanySettings />} />
+              <Route path="email-provider" element={<EmailProviderSettings />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
