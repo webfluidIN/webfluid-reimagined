@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       clients: {
         Row: {
+          address: string | null
           business_name: string
           city: string | null
           country: string | null
@@ -30,6 +31,7 @@ export type Database = {
           whatsapp: string | null
         }
         Insert: {
+          address?: string | null
           business_name: string
           city?: string | null
           country?: string | null
@@ -44,6 +46,7 @@ export type Database = {
           whatsapp?: string | null
         }
         Update: {
+          address?: string | null
           business_name?: string
           city?: string | null
           country?: string | null

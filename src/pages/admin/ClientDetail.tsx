@@ -37,7 +37,8 @@ const ClientDetail = () => {
     const { error } = await supabase.from("clients").update({
       full_name: client.full_name, business_name: client.business_name, email: client.email, phone: client.phone,
       whatsapp: client.whatsapp, country: client.country, city: client.city, website: client.website, notes: client.notes,
-    }).eq("id", id!);
+      address: client.address,
+    } as any).eq("id", id!);
     if (error) return toast({ title: "Failed", description: error.message, variant: "destructive" });
     toast({ title: "Saved" });
   };
@@ -63,6 +64,7 @@ const ClientDetail = () => {
           <div><Label>City</Label><Input value={client.city || ""} onChange={(e) => setClient({ ...client, city: e.target.value })} /></div>
           <div><Label>Country</Label><Input value={client.country || ""} onChange={(e) => setClient({ ...client, country: e.target.value })} /></div>
         </div>
+        <div className="mt-3"><Label>Address</Label><Textarea value={client.address || ""} onChange={(e) => setClient({ ...client, address: e.target.value })} rows={2} /></div>
         <div className="mt-3"><Label>Notes</Label><Textarea value={client.notes || ""} onChange={(e) => setClient({ ...client, notes: e.target.value })} rows={3} /></div>
         <Button onClick={save} className="mt-3">Save</Button>
       </Card>
