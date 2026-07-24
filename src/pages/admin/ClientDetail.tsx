@@ -64,6 +64,7 @@ const ClientDetail = () => {
           <div><Label>City</Label><Input value={client.city || ""} onChange={(e) => setClient({ ...client, city: e.target.value })} /></div>
           <div><Label>Country</Label><Input value={client.country || ""} onChange={(e) => setClient({ ...client, country: e.target.value })} /></div>
         </div>
+        <div className="mt-3"><Label>Address</Label><Textarea value={client.address || ""} onChange={(e) => setClient({ ...client, address: e.target.value })} rows={2} /></div>
         <div className="mt-3"><Label>Notes</Label><Textarea value={client.notes || ""} onChange={(e) => setClient({ ...client, notes: e.target.value })} rows={3} /></div>
         <Button onClick={save} className="mt-3">Save</Button>
       </Card>
