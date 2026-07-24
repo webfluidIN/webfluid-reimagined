@@ -1,7 +1,12 @@
+import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 const TermsOfService = () => {
+  useEffect(() => {
+    document.title = "Terms of Service - Webfluid";
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
