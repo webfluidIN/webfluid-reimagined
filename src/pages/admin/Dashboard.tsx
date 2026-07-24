@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Inbox, FileText, Users, RefreshCw, Receipt } from "lucide-react";
