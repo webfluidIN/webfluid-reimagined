@@ -18,7 +18,7 @@ type ProviderCfg = {
 
 async function sendViaProvider(cfg: ProviderCfg, params: {
   to: string; cc?: string; subject: string; htmlBody: string;
-  pdfBase64: string; pdfFilename: string; replyTo?: string; fromName?: string;
+  pdfBase64?: string; pdfFilename?: string; replyTo?: string; fromName?: string;
 }) {
   const senderEmail = cfg.sender_email;
   const senderName = params.fromName || cfg.sender_name || "Webfluid";
@@ -34,8 +34,8 @@ async function sendViaProvider(cfg: ProviderCfg, params: {
       to: [{ email: params.to }],
       subject: params.subject,
       htmlContent: params.htmlBody,
-      attachment: [{ name: params.pdfFilename, content: params.pdfBase64 }],
     };
+    if (params.pdfBase64 && params.pdfFilename) body.attachment = [{ name: params.pdfFilename, content: params.pdfBase64 }];
     if (params.cc) body.cc = [{ email: params.cc }];
     if (replyTo) body.replyTo = { email: replyTo };
     const url = cfg.api_base_url || "https://api.brevo.com/v3/smtp/email";
@@ -53,8 +53,8 @@ async function sendViaProvider(cfg: ProviderCfg, params: {
       personalizations: [personalization],
       from: { email: senderEmail, name: senderName },
       content: [{ type: "text/html", value: params.htmlBody }],
-      attachments: [{ content: params.pdfBase64, filename: params.pdfFilename, type: "application/pdf", disposition: "attachment" }],
     };
+    if (params.pdfBase64 && params.pdfFilename) body.attachments = [{ content: params.pdfBase64, filename: params.pdfFilename, type: "application/pdf", disposition: "attachment" }];
     if (replyTo) body.reply_to = { email: replyTo };
     const url = cfg.api_base_url || "https://api.sendgrid.com/v3/mail/send";
     return fetch(url, {
@@ -70,8 +70,8 @@ async function sendViaProvider(cfg: ProviderCfg, params: {
       to: [params.to],
       subject: params.subject,
       html: params.htmlBody,
-      attachments: [{ filename: params.pdfFilename, content: params.pdfBase64 }],
     };
+    if (params.pdfBase64 && params.pdfFilename) body.attachments = [{ filename: params.pdfFilename, content: params.pdfBase64 }];
     if (params.cc) body.cc = [params.cc];
     if (replyTo) body.reply_to = replyTo;
     const url = cfg.api_base_url || "https://api.resend.com/emails";
@@ -105,7 +105,7 @@ serve(async (req) => {
     if (!isStaff) return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: { ...cors, "Content-Type": "application/json" } });
 
     const { to, cc, subject, htmlBody, pdfBase64, pdfFilename, replyTo, fromName, invoiceId } = await req.json();
-    if (!to || !subject || !htmlBody || !pdfBase64 || !pdfFilename) {
+    if (!to || !subject || !htmlBody) {
       return new Response(JSON.stringify({ error: "Missing fields" }), { status: 400, headers: { ...cors, "Content-Type": "application/json" } });
     }
 
