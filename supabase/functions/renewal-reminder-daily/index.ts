@@ -61,7 +61,7 @@ serve(async () => {
       headers: { "Accept": "application/json", "Content-Type": "application/json", "api-key": brevo },
       body: JSON.stringify({
         sender: { name: "Webfluid Admin", email: "noreply@webfluid.in" },
-        to: [{ email: "hello@webfluid.in", name: "Webfluid Team" }],
+        to: [{ email: "info@webfluid.in", name: "Webfluid Team" }],
         subject: `Renewals reminder: ${due.length} item(s) due`,
         htmlContent: html,
       }),
