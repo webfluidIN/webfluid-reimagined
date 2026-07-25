@@ -155,6 +155,31 @@ const CompanySettings = () => {
             <p className="text-xs text-muted-foreground">Available variables: <code>{`{{client}}`}</code>, <code>{`{{company}}`}</code>, <code>{`{{number}}`}</code>, <code>{`{{total}}`}</code>, <code>{`{{valid_until}}`}</code></p>
           </Card>
         </TabsContent>
+        <TabsContent value="renewals">
+          <Card className="p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-semibold">Enable renewal notifications</div>
+                <div className="text-xs text-muted-foreground">Daily email digest of upcoming/overdue renewals.</div>
+              </div>
+              <label className="inline-flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" className="h-5 w-5 accent-primary" checked={s.renewal_notify_enabled ?? true} onChange={(e) => set("renewal_notify_enabled", e.target.checked)} />
+                <span className="text-sm">{s.renewal_notify_enabled === false ? "Off" : "On"}</span>
+              </label>
+            </div>
+            <div><Label>Notification email</Label><Input placeholder="info@webfluid.in" value={s.renewal_notify_email ?? ""} onChange={(e) => set("renewal_notify_email", e.target.value)} /></div>
+            <div>
+              <Label>Notify me this many days before renewal</Label>
+              <Input
+                placeholder="1, 15"
+                value={Array.isArray(s.renewal_notify_days) ? s.renewal_notify_days.join(", ") : ""}
+                onChange={(e) => set("renewal_notify_days", e.target.value.split(",").map((x) => parseInt(x.trim(), 10)).filter((n) => Number.isFinite(n) && n >= 0))}
+              />
+              <p className="text-xs text-muted-foreground mt-1">Comma-separated days (e.g. <code>1, 15</code>). Overdue items are always included.</p>
+            </div>
+            <p className="text-xs text-muted-foreground">The reminder runs once a day at 08:00 UTC. Each item is emailed at most once per day.</p>
+          </Card>
+        </TabsContent>
       </Tabs>
 
       <Button size="lg" onClick={save} disabled={saving} className="gradient-bg">{saving ? "Saving…" : "Save settings"}</Button>
