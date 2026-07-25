@@ -83,6 +83,9 @@ export type Database = {
           quote_email_body: string
           quote_email_subject: string
           quote_template: string
+          renewal_notify_days: number[]
+          renewal_notify_email: string | null
+          renewal_notify_enabled: boolean
           reply_to_email: string | null
           tax_id: string | null
           updated_at: string
@@ -108,6 +111,9 @@ export type Database = {
           quote_email_body?: string
           quote_email_subject?: string
           quote_template?: string
+          renewal_notify_days?: number[]
+          renewal_notify_email?: string | null
+          renewal_notify_enabled?: boolean
           reply_to_email?: string | null
           tax_id?: string | null
           updated_at?: string
@@ -133,6 +139,9 @@ export type Database = {
           quote_email_body?: string
           quote_email_subject?: string
           quote_template?: string
+          renewal_notify_days?: number[]
+          renewal_notify_email?: string | null
+          renewal_notify_enabled?: boolean
           reply_to_email?: string | null
           tax_id?: string | null
           updated_at?: string
