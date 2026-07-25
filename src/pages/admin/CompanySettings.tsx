@@ -72,6 +72,7 @@ const CompanySettings = () => {
           <TabsTrigger value="company">Company</TabsTrigger>
           <TabsTrigger value="templates">Templates</TabsTrigger>
           <TabsTrigger value="email">Email</TabsTrigger>
+          <TabsTrigger value="renewals">Renewals</TabsTrigger>
         </TabsList>
 
         <TabsContent value="company">
