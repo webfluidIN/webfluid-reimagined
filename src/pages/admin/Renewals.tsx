@@ -149,7 +149,7 @@ Webfluid Team`
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-2xl font-display font-bold">Renewals</h2>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <Select value={sortDirection} onValueChange={(v: "asc" | "desc") => setSortDirection(v)}>
+          <Select value={sortDirection} onValueChange={(v) => setSortDirection(v === "desc" ? "desc" : "asc")}>
             <SelectTrigger className="w-full sm:w-52">
               <SelectValue placeholder="Sort by renewal date" />
             </SelectTrigger>
