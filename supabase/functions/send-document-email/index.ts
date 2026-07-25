@@ -34,8 +34,8 @@ async function sendViaProvider(cfg: ProviderCfg, params: {
       to: [{ email: params.to }],
       subject: params.subject,
       htmlContent: params.htmlBody,
-      attachment: [{ name: params.pdfFilename, content: params.pdfBase64 }],
     };
+    if (params.pdfBase64 && params.pdfFilename) body.attachment = [{ name: params.pdfFilename, content: params.pdfBase64 }];
     if (params.cc) body.cc = [{ email: params.cc }];
     if (replyTo) body.replyTo = { email: replyTo };
     const url = cfg.api_base_url || "https://api.brevo.com/v3/smtp/email";
