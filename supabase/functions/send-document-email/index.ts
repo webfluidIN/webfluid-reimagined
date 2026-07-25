@@ -105,7 +105,7 @@ serve(async (req) => {
     if (!isStaff) return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: { ...cors, "Content-Type": "application/json" } });
 
     const { to, cc, subject, htmlBody, pdfBase64, pdfFilename, replyTo, fromName, invoiceId } = await req.json();
-    if (!to || !subject || !htmlBody || !pdfBase64 || !pdfFilename) {
+    if (!to || !subject || !htmlBody) {
       return new Response(JSON.stringify({ error: "Missing fields" }), { status: 400, headers: { ...cors, "Content-Type": "application/json" } });
     }
 
