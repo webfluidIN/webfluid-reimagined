@@ -70,8 +70,8 @@ async function sendViaProvider(cfg: ProviderCfg, params: {
       to: [params.to],
       subject: params.subject,
       html: params.htmlBody,
-      attachments: [{ filename: params.pdfFilename, content: params.pdfBase64 }],
     };
+    if (params.pdfBase64 && params.pdfFilename) body.attachments = [{ filename: params.pdfFilename, content: params.pdfBase64 }];
     if (params.cc) body.cc = [params.cc];
     if (replyTo) body.reply_to = replyTo;
     const url = cfg.api_base_url || "https://api.resend.com/emails";
