@@ -17,12 +17,9 @@ serve(async () => {
       .eq("status", "active");
 
     const due = (rows ?? []).filter((r: any) => {
-      const renews = new Date(r.renews_on);
-      const remindOn = new Date(renews);
-      remindOn.setDate(remindOn.getDate() - (r.reminder_days_before ?? 30));
-      const shouldRemind = today >= remindOn;
+      const days = Math.ceil((new Date(r.renews_on).getTime() - today.getTime()) / 86400000);
       const notRemindedToday = r.last_reminded_on !== todayISO;
-      return shouldRemind && notRemindedToday;
+      return days <= 15 && notRemindedToday;
     });
 
     if (due.length === 0) {
