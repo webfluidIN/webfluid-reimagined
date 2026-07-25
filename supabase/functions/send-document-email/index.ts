@@ -53,8 +53,8 @@ async function sendViaProvider(cfg: ProviderCfg, params: {
       personalizations: [personalization],
       from: { email: senderEmail, name: senderName },
       content: [{ type: "text/html", value: params.htmlBody }],
-      attachments: [{ content: params.pdfBase64, filename: params.pdfFilename, type: "application/pdf", disposition: "attachment" }],
     };
+    if (params.pdfBase64 && params.pdfFilename) body.attachments = [{ content: params.pdfBase64, filename: params.pdfFilename, type: "application/pdf", disposition: "attachment" }];
     if (replyTo) body.reply_to = { email: replyTo };
     const url = cfg.api_base_url || "https://api.sendgrid.com/v3/mail/send";
     return fetch(url, {
