@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,7 @@ const Renewals = () => {
   const { toast } = useToast();
   const [rows, setRows] = useState<any[]>([]);
   const [clients, setClients] = useState<any[]>([]);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<any>(emptyForm);
@@ -37,13 +38,19 @@ const Renewals = () => {
   const [emailBody, setEmailBody] = useState("");
   const [sending, setSending] = useState(false);
 
-  const load = async () => {
-    const { data } = await supabase.from("renewals").select("*, clients(business_name, email)").order("renews_on");
+  const load = useCallback(async () => {
+    const { data } = await supabase
+      .from("renewals")
+      .select("*, clients(business_name, email)")
+      .order("renews_on", { ascending: sortDirection === "asc" });
     setRows(data ?? []);
-  };
+  }, [sortDirection]);
 
   useEffect(() => {
     load();
+  }, [load]);
+
+  useEffect(() => {
     supabase.from("clients").select("id, business_name").order("business_name").then(({ data }) => setClients(data ?? []));
   }, []);
 
@@ -139,9 +146,20 @@ Webfluid Team`
 
   return (
     <div className="max-w-6xl space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-2xl font-display font-bold">Renewals</h2>
-        <Button onClick={openNew}><Plus className="w-4 h-4 mr-2" /> Add renewal</Button>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <Select value={sortDirection} onValueChange={(v) => setSortDirection(v === "desc" ? "desc" : "asc")}>
+            <SelectTrigger className="w-full sm:w-52">
+              <SelectValue placeholder="Sort by renewal date" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="asc">Renewal date: Soonest first</SelectItem>
+              <SelectItem value="desc">Renewal date: Latest first</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button onClick={openNew}><Plus className="w-4 h-4 mr-2" /> Add renewal</Button>
+        </div>
       </div>
 
       <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) { setEditingId(null); setForm(emptyForm); } }}>
@@ -204,19 +222,19 @@ Webfluid Team`
                 {rows.map((r) => {
                   const d = daysUntil(r.renews_on);
                   return (
-                    <tr key={r.id} className="border-b hover:bg-muted/30">
+                    <tr key={r.id} className={`border-b ${d <= 30 ? "bg-destructive/10 hover:bg-destructive/15" : "hover:bg-muted/30"}`}>
                       <td className="py-3 px-2">{r.clients?.business_name}</td>
                       <td className="py-3 px-2">{r.label}<div className="text-xs text-muted-foreground">{r.vendor}</div></td>
                       <td className="py-3 px-2 text-xs">{r.type.replace(/_/g, " ")}</td>
                       <td className="py-3 px-2">{r.renews_on}</td>
-                      <td className={`py-3 px-2 text-xs font-semibold ${d < 0 ? "text-red-600" : d <= 30 ? "text-orange-600" : "text-muted-foreground"}`}>{d < 0 ? `${-d}d overdue` : `${d}d`}</td>
+                      <td className={`py-3 px-2 text-xs font-semibold ${d <= 30 ? "text-destructive" : "text-muted-foreground"}`}>{d < 0 ? `${-d}d overdue` : `${d}d`}</td>
                       <td className="py-3 px-2 text-xs">{r.cost ? `${r.currency} ${Number(r.cost).toLocaleString()}` : "—"}</td>
                       <td className="py-3 px-2"><StatusBadge status={r.status} /></td>
                       <td className="py-3 px-2 text-right whitespace-nowrap">
                         <Button size="sm" variant="ghost" onClick={() => openEmail(r)} title="Email client"><Mail className="w-4 h-4" /></Button>
                         <Button size="sm" variant="ghost" onClick={() => markRenewed(r)} title="Mark renewed"><RefreshCw className="w-4 h-4" /></Button>
                         <Button size="sm" variant="ghost" onClick={() => openEdit(r)} title="Edit"><Pencil className="w-4 h-4" /></Button>
-                        <Button size="sm" variant="ghost" onClick={() => setDeleteId(r.id)} title="Delete"><Trash2 className="w-4 h-4 text-red-600" /></Button>
+                        <Button size="sm" variant="ghost" onClick={() => setDeleteId(r.id)} title="Delete"><Trash2 className="w-4 h-4 text-destructive" /></Button>
                       </td>
                     </tr>
                   );
@@ -235,7 +253,7 @@ Webfluid Team`
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={remove} className="bg-red-600 hover:bg-red-700">Delete</AlertDialogAction>
+            <AlertDialogAction onClick={remove} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
