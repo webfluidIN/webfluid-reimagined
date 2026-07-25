@@ -18,7 +18,7 @@ type ProviderCfg = {
 
 async function sendViaProvider(cfg: ProviderCfg, params: {
   to: string; cc?: string; subject: string; htmlBody: string;
-  pdfBase64: string; pdfFilename: string; replyTo?: string; fromName?: string;
+  pdfBase64?: string; pdfFilename?: string; replyTo?: string; fromName?: string;
 }) {
   const senderEmail = cfg.sender_email;
   const senderName = params.fromName || cfg.sender_name || "Webfluid";
