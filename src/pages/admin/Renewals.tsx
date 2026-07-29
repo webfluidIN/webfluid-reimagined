@@ -19,7 +19,7 @@ const RENEWAL_TYPES = ["domain", "hosting", "plugin", "ad_retainer", "google_wor
 
 const emptyForm = {
   client_id: "", type: "domain", label: "", vendor: "", cost: "", currency: "INR",
-  renews_on: "", reminder_days_before: 30, status: "active", notes: "",
+  renews_on: "", status: "active", notes: "",
 };
 
 const Renewals = () => {
@@ -60,7 +60,7 @@ const Renewals = () => {
     setForm({
       client_id: r.client_id, type: r.type, label: r.label, vendor: r.vendor ?? "",
       cost: r.cost ?? "", currency: r.currency ?? "INR", renews_on: r.renews_on,
-      reminder_days_before: r.reminder_days_before ?? 30, status: r.status, notes: r.notes ?? "",
+      status: r.status, notes: r.notes ?? "",
     });
     setOpen(true);
   };
@@ -70,7 +70,6 @@ const Renewals = () => {
     const payload = {
       ...form,
       cost: form.cost ? Number(form.cost) : null,
-      reminder_days_before: Number(form.reminder_days_before),
     };
     const { error } = editingId
       ? await supabase.from("renewals").update(payload).eq("id", editingId)
@@ -186,7 +185,7 @@ Webfluid Team`
               <div><Label>Cost</Label><Input type="number" step="0.01" value={form.cost} onChange={(e) => setForm({ ...form, cost: e.target.value })} /></div>
               <div><Label>Currency</Label><Input value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })} /></div>
               <div><Label>Renews on *</Label><Input type="date" value={form.renews_on} onChange={(e) => setForm({ ...form, renews_on: e.target.value })} /></div>
-              <div><Label>Reminder (days before)</Label><Input type="number" value={form.reminder_days_before} onChange={(e) => setForm({ ...form, reminder_days_before: e.target.value })} /></div>
+              
               <div><Label>Status</Label>
                 <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
