@@ -88,6 +88,24 @@ const CompanySettings = () => {
               <div className="md:col-span-2"><Label>Website</Label><Input value={s.website ?? ""} onChange={(e) => set("website", e.target.value)} /></div>
             </div>
 
+            <div className="border-t pt-4">
+              <div className="font-semibold mb-1">Social media links</div>
+              <p className="text-xs text-muted-foreground mb-3">Shown as icons in the footer of client emails. Leave blank to hide.</p>
+              <div className="grid md:grid-cols-2 gap-3">
+                {([
+                  ["social_facebook", "Facebook"],
+                  ["social_instagram", "Instagram"],
+                  ["social_linkedin", "LinkedIn"],
+                  ["social_x", "X (Twitter)"],
+                  ["social_youtube", "YouTube"],
+                  ["social_whatsapp", "WhatsApp"],
+                ] as const).map(([k, label]) => (
+                  <div key={k}><Label>{label}</Label><Input placeholder="https://…" value={s[k] ?? ""} onChange={(e) => set(k, e.target.value)} /></div>
+                ))}
+              </div>
+            </div>
+
+
             <div>
               <Label>Logo</Label>
               <div className="flex items-center gap-4 mt-1">
