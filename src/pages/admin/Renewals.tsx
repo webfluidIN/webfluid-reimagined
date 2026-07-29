@@ -14,7 +14,10 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, RefreshCw, Pencil, Trash2, Mail, Loader2, X } from "lucide-react";
+import { brandedEmail, loadBrand, para, renewalTable } from "@/lib/brandEmail";
+import { renderTemplate } from "@/lib/companySettings";
+import { Plus, RefreshCw, Pencil, Trash2, Mail, Loader2, X, BadgeCheck } from "lucide-react";
+
 
 const RENEWAL_TYPES = ["domain", "hosting", "plugin", "ad_retainer", "google_workspace", "email", "other"];
 
