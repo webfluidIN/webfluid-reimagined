@@ -351,7 +351,7 @@ const Renewals = () => {
 
       <Dialog open={emailOpen} onOpenChange={(o) => !o && setEmailOpen(false)}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Email renewal reminder</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{emailMode === "thankyou" ? "Send renewal confirmation" : "Email renewal reminder"}</DialogTitle></DialogHeader>
           <div className="space-y-3">
             <div><Label>To</Label><Input value={emailTo} onChange={(e) => setEmailTo(e.target.value)} /></div>
             <div><Label>Subject</Label><Input value={emailSubject} onChange={(e) => setEmailSubject(e.target.value)} /></div>
