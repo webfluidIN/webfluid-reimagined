@@ -60,7 +60,7 @@ const Renewals = () => {
     setForm({
       client_id: r.client_id, type: r.type, label: r.label, vendor: r.vendor ?? "",
       cost: r.cost ?? "", currency: r.currency ?? "INR", renews_on: r.renews_on,
-      reminder_days_before: r.reminder_days_before ?? 30, status: r.status, notes: r.notes ?? "",
+      status: r.status, notes: r.notes ?? "",
     });
     setOpen(true);
   };
