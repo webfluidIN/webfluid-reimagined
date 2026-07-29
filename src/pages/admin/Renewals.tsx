@@ -70,7 +70,6 @@ const Renewals = () => {
     const payload = {
       ...form,
       cost: form.cost ? Number(form.cost) : null,
-      reminder_days_before: Number(form.reminder_days_before),
     };
     const { error } = editingId
       ? await supabase.from("renewals").update(payload).eq("id", editingId)
