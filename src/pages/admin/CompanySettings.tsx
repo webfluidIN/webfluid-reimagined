@@ -196,6 +196,15 @@ const CompanySettings = () => {
               <p className="text-xs text-muted-foreground mt-1">Comma-separated days (e.g. <code>1, 15</code>). Overdue items are always included.</p>
             </div>
             <p className="text-xs text-muted-foreground">The reminder runs once a day at 08:00 UTC. Each item is emailed at most once per day.</p>
+
+            <div className="border-t pt-4 space-y-3">
+              <div className="font-semibold">Renewal thank-you / confirmation email</div>
+              <p className="text-xs text-muted-foreground">Sent manually to a client after their services are renewed.</p>
+              <div><Label className="text-xs">Subject</Label><Input value={s.renewal_thankyou_subject ?? ""} onChange={(e) => set("renewal_thankyou_subject", e.target.value)} /></div>
+              <div><Label className="text-xs">Message</Label><Textarea rows={6} value={s.renewal_thankyou_body ?? ""} onChange={(e) => set("renewal_thankyou_body", e.target.value)} /></div>
+              <p className="text-xs text-muted-foreground">Variables: <code>{`{{client}}`}</code>, <code>{`{{company}}`}</code></p>
+            </div>
+
           </Card>
         </TabsContent>
       </Tabs>
