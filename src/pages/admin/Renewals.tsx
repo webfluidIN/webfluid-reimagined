@@ -41,6 +41,7 @@ const Renewals = () => {
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const [emailOpen, setEmailOpen] = useState(false);
+  const [emailMode, setEmailMode] = useState<"reminder" | "thankyou">("reminder");
   const [emailCandidates, setEmailCandidates] = useState<any[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [emailTo, setEmailTo] = useState("");
@@ -48,6 +49,7 @@ const Renewals = () => {
   const [emailIntro, setEmailIntro] = useState("");
   const [emailOutro, setEmailOutro] = useState("");
   const [sending, setSending] = useState(false);
+  const [brand, setBrand] = useState<{ settings: any; logoUrl: string | null }>({ settings: {}, logoUrl: null });
 
   const load = useCallback(async () => {
     const { data } = await supabase
@@ -63,7 +65,9 @@ const Renewals = () => {
 
   useEffect(() => {
     supabase.from("clients").select("id, business_name, email").order("business_name").then(({ data }) => setClients(data ?? []));
+    loadBrand().then(setBrand);
   }, []);
+
 
   const openNew = () => { setEditingId(null); setForm(emptyForm); setItems([emptyItem()]); setOpen(true); };
   const openEdit = (r: any) => {
