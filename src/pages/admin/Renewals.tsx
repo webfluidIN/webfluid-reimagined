@@ -93,8 +93,8 @@ const Renewals = () => {
       return toast({ title: "Each item needs a label and renewal date", variant: "destructive" });
 
     const { error } = editingId
-      ? await supabase.from("renewals").update(prepared[0]).eq("id", editingId)
-      : await supabase.from("renewals").insert(prepared);
+      ? await supabase.from("renewals").update(prepared[0] as any).eq("id", editingId)
+      : await supabase.from("renewals").insert(prepared as any);
     if (error) return toast({ title: "Failed", description: error.message, variant: "destructive" });
     toast({ title: editingId ? "Renewal updated" : `${prepared.length} renewal${prepared.length > 1 ? "s" : ""} added` });
     setOpen(false); setEditingId(null); setForm(emptyForm); setItems([emptyItem()]);
