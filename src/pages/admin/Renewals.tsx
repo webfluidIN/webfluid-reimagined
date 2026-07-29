@@ -19,7 +19,7 @@ const RENEWAL_TYPES = ["domain", "hosting", "plugin", "ad_retainer", "google_wor
 
 const emptyForm = {
   client_id: "", type: "domain", label: "", vendor: "", cost: "", currency: "INR",
-  renews_on: "", reminder_days_before: 30, status: "active", notes: "",
+  renews_on: "", status: "active", notes: "",
 };
 
 const Renewals = () => {
