@@ -381,8 +381,9 @@ const Renewals = () => {
           <DialogFooter>
             <Button variant="outline" onClick={() => setEmailOpen(false)} disabled={sending}>Cancel</Button>
             <Button onClick={sendEmail} disabled={sending} className="gradient-bg">
-              {sending && <Loader2 className="w-4 h-4 mr-1 animate-spin" />}Send reminder
+              {sending && <Loader2 className="w-4 h-4 mr-1 animate-spin" />}{emailMode === "thankyou" ? "Send confirmation" : "Send reminder"}
             </Button>
+
           </DialogFooter>
         </DialogContent>
       </Dialog>
