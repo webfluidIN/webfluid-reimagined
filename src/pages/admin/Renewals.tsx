@@ -14,7 +14,10 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, RefreshCw, Pencil, Trash2, Mail, Loader2, X } from "lucide-react";
+import { brandedEmail, loadBrand, para, renewalTable } from "@/lib/brandEmail";
+import { renderTemplate } from "@/lib/companySettings";
+import { Plus, RefreshCw, Pencil, Trash2, Mail, Loader2, X, BadgeCheck } from "lucide-react";
+
 
 const RENEWAL_TYPES = ["domain", "hosting", "plugin", "ad_retainer", "google_workspace", "email", "other"];
 
@@ -38,6 +41,7 @@ const Renewals = () => {
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const [emailOpen, setEmailOpen] = useState(false);
+  const [emailMode, setEmailMode] = useState<"reminder" | "thankyou">("reminder");
   const [emailCandidates, setEmailCandidates] = useState<any[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [emailTo, setEmailTo] = useState("");
@@ -45,6 +49,7 @@ const Renewals = () => {
   const [emailIntro, setEmailIntro] = useState("");
   const [emailOutro, setEmailOutro] = useState("");
   const [sending, setSending] = useState(false);
+  const [brand, setBrand] = useState<{ settings: any; logoUrl: string | null }>({ settings: {}, logoUrl: null });
 
   const load = useCallback(async () => {
     const { data } = await supabase
@@ -60,7 +65,9 @@ const Renewals = () => {
 
   useEffect(() => {
     supabase.from("clients").select("id, business_name, email").order("business_name").then(({ data }) => setClients(data ?? []));
+    loadBrand().then(setBrand);
   }, []);
+
 
   const openNew = () => { setEditingId(null); setForm(emptyForm); setItems([emptyItem()]); setOpen(true); };
   const openEdit = (r: any) => {
@@ -120,14 +127,34 @@ const Renewals = () => {
 
   const daysUntil = (d: string) => Math.ceil((new Date(d).getTime() - Date.now()) / 86400000);
 
-  const openEmail = (r: any) => {
+  const openEmail = (r: any, mode: "reminder" | "thankyou" = "reminder") => {
     const clientRows = rows.filter((x) => x.client_id === r.client_id && x.status === "active");
+    const clientName = r.clients?.business_name || "there";
+    setEmailMode(mode);
     setEmailCandidates(clientRows);
     setSelectedIds([r.id]);
     setEmailTo(r.clients?.email ?? "");
-    setEmailSubject(`Upcoming renewals for ${r.clients?.business_name ?? "your account"}`);
-    setEmailIntro(`Hi ${r.clients?.business_name || "there"},\n\nThis is a friendly reminder about the following upcoming service renewals:`);
-    setEmailOutro(`Please let us know if you'd like us to proceed with the renewals, or reply to this email with any questions.\n\nThanks,\nWebfluid Team`);
+    if (mode === "thankyou") {
+      const s = brand.settings ?? {};
+      setEmailSubject(
+        renderTemplate(s.renewal_thankyou_subject || "Thank you — your renewal is confirmed", {
+          client: clientName,
+          company: s.company_name || "Webfluid",
+        }),
+      );
+      setEmailIntro(
+        renderTemplate(
+          s.renewal_thankyou_body ||
+            "Hi {{client}},\n\nThank you! We have successfully renewed the following service(s) for you. Your next renewal date is shown below.\n\nWe appreciate your continued trust in us.",
+          { client: clientName, company: s.company_name || "Webfluid" },
+        ),
+      );
+      setEmailOutro(`If you have any questions, just reply to this email — we're happy to help.\n\nThanks,\n${brand.settings?.company_name || "Webfluid"} Team`);
+    } else {
+      setEmailSubject(`Upcoming renewals for ${r.clients?.business_name ?? "your account"}`);
+      setEmailIntro(`Hi ${clientName},\n\nThis is a friendly reminder about the following upcoming service renewals:`);
+      setEmailOutro(`Please let us know if you'd like us to proceed with the renewals, or reply to this email with any questions.\n\nThanks,\n${brand.settings?.company_name || "Webfluid"} Team`);
+    }
     setEmailOpen(true);
   };
 
@@ -140,46 +167,31 @@ const Renewals = () => {
     if (chosen.length === 0) return toast({ title: "Select at least one item", variant: "destructive" });
     setSending(true);
     try {
-      const esc = (s: any) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
-      const para = (t: string) => t.split("\n").map((l) => `<p style="margin:0 0 10px 0">${esc(l) || "&nbsp;"}</p>`).join("");
+      const isThanks = emailMode === "thankyou";
+      const primary = brand.settings?.primary_color || "#1E5FAD";
+      const contentHtml = `
+        ${para(emailIntro)}
+        ${renewalTable(chosen, { brand: primary, dateHeading: isThanks ? "Next renewal" : "Renews on", showDue: !isThanks })}
+        ${para(emailOutro)}`;
 
-      const total = chosen.reduce((s, r) => s + (Number(r.cost) || 0), 0);
-      const currency = chosen.find((r) => r.cost)?.currency ?? "INR";
-
-      const itemRows = chosen.map((r) => {
-        const d = daysUntil(r.renews_on);
-        const due = d < 0 ? `${-d} day(s) overdue` : `in ${d} day(s)`;
-        return `<tr>
-          <td style="padding:8px;border:1px solid #e5e7eb;">${esc(r.label)}<div style="font-size:12px;color:#6b7280;">${esc(String(r.type).replace(/_/g, " "))}${r.vendor ? ` · ${esc(r.vendor)}` : ""}</div></td>
-          <td style="padding:8px;border:1px solid #e5e7eb;">${esc(r.renews_on)}<div style="font-size:12px;color:${d < 0 ? "#dc2626" : "#6b7280"};">${due}</div></td>
-          <td style="padding:8px;border:1px solid #e5e7eb;text-align:right;">${r.cost ? `${esc(r.currency)} ${Number(r.cost).toLocaleString()}` : "—"}</td>
-        </tr>`;
-      }).join("");
-
-      const htmlBody = `
-        <div style="font-family:Arial,sans-serif;max-width:640px;margin:0 auto;color:#111827;">
-          ${para(emailIntro)}
-          <table style="border-collapse:collapse;width:100%;font-size:14px;margin:16px 0;">
-            <thead><tr style="background:#f9fafb;">
-              <th style="padding:8px;border:1px solid #e5e7eb;text-align:left;">Service</th>
-              <th style="padding:8px;border:1px solid #e5e7eb;text-align:left;">Renews on</th>
-              <th style="padding:8px;border:1px solid #e5e7eb;text-align:right;">Cost</th>
-            </tr></thead>
-            <tbody>${itemRows}</tbody>
-            ${total > 0 ? `<tfoot><tr><td colspan="2" style="padding:8px;border:1px solid #e5e7eb;text-align:right;font-weight:600;">Total</td><td style="padding:8px;border:1px solid #e5e7eb;text-align:right;font-weight:600;">${esc(currency)} ${total.toLocaleString()}</td></tr></tfoot>` : ""}
-          </table>
-          ${para(emailOutro)}
-        </div>`;
+      const htmlBody = brandedEmail({
+        settings: brand.settings,
+        logoUrl: brand.logoUrl,
+        contentHtml,
+        preheader: isThanks ? "Your renewal is confirmed" : "Upcoming service renewals",
+      });
 
       const { data, error } = await supabase.functions.invoke("send-document-email", {
         body: { to: emailTo, subject: emailSubject, htmlBody },
       });
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
-      await supabase.from("renewals")
-        .update({ last_reminded_on: new Date().toISOString().slice(0, 10) })
-        .in("id", chosen.map((r) => r.id));
-      toast({ title: `Reminder sent for ${chosen.length} item(s)` });
+      if (!isThanks) {
+        await supabase.from("renewals")
+          .update({ last_reminded_on: new Date().toISOString().slice(0, 10) })
+          .in("id", chosen.map((r) => r.id));
+      }
+      toast({ title: isThanks ? `Confirmation sent for ${chosen.length} item(s)` : `Reminder sent for ${chosen.length} item(s)` });
       setEmailOpen(false);
       load();
     } catch (e: any) {
@@ -188,6 +200,7 @@ const Renewals = () => {
       setSending(false);
     }
   };
+
 
   return (
     <div className="max-w-6xl space-y-4">
@@ -307,7 +320,9 @@ const Renewals = () => {
                       <td className="py-3 px-2 text-xs">{r.cost ? `${r.currency} ${Number(r.cost).toLocaleString()}` : "—"}</td>
                       <td className="py-3 px-2"><StatusBadge status={r.status} /></td>
                       <td className="py-3 px-2 text-right whitespace-nowrap">
-                        <Button size="sm" variant="ghost" onClick={() => openEmail(r)} title="Email client"><Mail className="w-4 h-4" /></Button>
+                        <Button size="sm" variant="ghost" onClick={() => openEmail(r, "reminder")} title="Email renewal reminder"><Mail className="w-4 h-4" /></Button>
+                        <Button size="sm" variant="ghost" onClick={() => openEmail(r, "thankyou")} title="Send thank-you / renewal confirmation"><BadgeCheck className="w-4 h-4 text-primary" /></Button>
+
                         <Button size="sm" variant="ghost" onClick={() => markRenewed(r)} title="Mark renewed"><RefreshCw className="w-4 h-4" /></Button>
                         <Button size="sm" variant="ghost" onClick={() => openEdit(r)} title="Edit"><Pencil className="w-4 h-4" /></Button>
                         <Button size="sm" variant="ghost" onClick={() => setDeleteId(r.id)} title="Delete"><Trash2 className="w-4 h-4 text-destructive" /></Button>
@@ -336,7 +351,7 @@ const Renewals = () => {
 
       <Dialog open={emailOpen} onOpenChange={(o) => !o && setEmailOpen(false)}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Email renewal reminder</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{emailMode === "thankyou" ? "Send renewal confirmation" : "Email renewal reminder"}</DialogTitle></DialogHeader>
           <div className="space-y-3">
             <div><Label>To</Label><Input value={emailTo} onChange={(e) => setEmailTo(e.target.value)} /></div>
             <div><Label>Subject</Label><Input value={emailSubject} onChange={(e) => setEmailSubject(e.target.value)} /></div>
@@ -366,8 +381,9 @@ const Renewals = () => {
           <DialogFooter>
             <Button variant="outline" onClick={() => setEmailOpen(false)} disabled={sending}>Cancel</Button>
             <Button onClick={sendEmail} disabled={sending} className="gradient-bg">
-              {sending && <Loader2 className="w-4 h-4 mr-1 animate-spin" />}Send reminder
+              {sending && <Loader2 className="w-4 h-4 mr-1 animate-spin" />}{emailMode === "thankyou" ? "Send confirmation" : "Send reminder"}
             </Button>
+
           </DialogFooter>
         </DialogContent>
       </Dialog>

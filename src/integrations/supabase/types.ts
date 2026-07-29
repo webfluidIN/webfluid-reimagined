@@ -86,7 +86,15 @@ export type Database = {
           renewal_notify_days: number[]
           renewal_notify_email: string | null
           renewal_notify_enabled: boolean
+          renewal_thankyou_body: string
+          renewal_thankyou_subject: string
           reply_to_email: string | null
+          social_facebook: string | null
+          social_instagram: string | null
+          social_linkedin: string | null
+          social_whatsapp: string | null
+          social_x: string | null
+          social_youtube: string | null
           tax_id: string | null
           updated_at: string
           website: string | null
@@ -114,7 +122,15 @@ export type Database = {
           renewal_notify_days?: number[]
           renewal_notify_email?: string | null
           renewal_notify_enabled?: boolean
+          renewal_thankyou_body?: string
+          renewal_thankyou_subject?: string
           reply_to_email?: string | null
+          social_facebook?: string | null
+          social_instagram?: string | null
+          social_linkedin?: string | null
+          social_whatsapp?: string | null
+          social_x?: string | null
+          social_youtube?: string | null
           tax_id?: string | null
           updated_at?: string
           website?: string | null
@@ -142,7 +158,15 @@ export type Database = {
           renewal_notify_days?: number[]
           renewal_notify_email?: string | null
           renewal_notify_enabled?: boolean
+          renewal_thankyou_body?: string
+          renewal_thankyou_subject?: string
           reply_to_email?: string | null
+          social_facebook?: string | null
+          social_instagram?: string | null
+          social_linkedin?: string | null
+          social_whatsapp?: string | null
+          social_x?: string | null
+          social_youtube?: string | null
           tax_id?: string | null
           updated_at?: string
           website?: string | null

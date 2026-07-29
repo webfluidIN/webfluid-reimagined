@@ -88,6 +88,24 @@ const CompanySettings = () => {
               <div className="md:col-span-2"><Label>Website</Label><Input value={s.website ?? ""} onChange={(e) => set("website", e.target.value)} /></div>
             </div>
 
+            <div className="border-t pt-4">
+              <div className="font-semibold mb-1">Social media links</div>
+              <p className="text-xs text-muted-foreground mb-3">Shown as icons in the footer of client emails. Leave blank to hide.</p>
+              <div className="grid md:grid-cols-2 gap-3">
+                {([
+                  ["social_facebook", "Facebook"],
+                  ["social_instagram", "Instagram"],
+                  ["social_linkedin", "LinkedIn"],
+                  ["social_x", "X (Twitter)"],
+                  ["social_youtube", "YouTube"],
+                  ["social_whatsapp", "WhatsApp"],
+                ] as const).map(([k, label]) => (
+                  <div key={k}><Label>{label}</Label><Input placeholder="https://…" value={s[k] ?? ""} onChange={(e) => set(k, e.target.value)} /></div>
+                ))}
+              </div>
+            </div>
+
+
             <div>
               <Label>Logo</Label>
               <div className="flex items-center gap-4 mt-1">
@@ -178,6 +196,15 @@ const CompanySettings = () => {
               <p className="text-xs text-muted-foreground mt-1">Comma-separated days (e.g. <code>1, 15</code>). Overdue items are always included.</p>
             </div>
             <p className="text-xs text-muted-foreground">The reminder runs once a day at 08:00 UTC. Each item is emailed at most once per day.</p>
+
+            <div className="border-t pt-4 space-y-3">
+              <div className="font-semibold">Renewal thank-you / confirmation email</div>
+              <p className="text-xs text-muted-foreground">Sent manually to a client after their services are renewed.</p>
+              <div><Label className="text-xs">Subject</Label><Input value={s.renewal_thankyou_subject ?? ""} onChange={(e) => set("renewal_thankyou_subject", e.target.value)} /></div>
+              <div><Label className="text-xs">Message</Label><Textarea rows={6} value={s.renewal_thankyou_body ?? ""} onChange={(e) => set("renewal_thankyou_body", e.target.value)} /></div>
+              <p className="text-xs text-muted-foreground">Variables: <code>{`{{client}}`}</code>, <code>{`{{company}}`}</code></p>
+            </div>
+
           </Card>
         </TabsContent>
       </Tabs>
