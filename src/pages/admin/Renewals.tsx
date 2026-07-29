@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import {
@@ -13,13 +14,16 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, RefreshCw, Pencil, Trash2, Mail, Loader2 } from "lucide-react";
+import { Plus, RefreshCw, Pencil, Trash2, Mail, Loader2, X } from "lucide-react";
 
 const RENEWAL_TYPES = ["domain", "hosting", "plugin", "ad_retainer", "google_workspace", "email", "other"];
 
+type Item = { type: string; label: string; vendor: string; cost: string; renews_on: string };
+
+const emptyItem = (renews_on = ""): Item => ({ type: "domain", label: "", vendor: "", cost: "", renews_on });
+
 const emptyForm = {
-  client_id: "", type: "domain", label: "", vendor: "", cost: "", currency: "INR",
-  renews_on: "", status: "active", notes: "",
+  client_id: "", currency: "INR", renews_on: "", status: "active", notes: "",
 };
 
 const Renewals = () => {
@@ -30,12 +34,16 @@ const Renewals = () => {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<any>(emptyForm);
+  const [items, setItems] = useState<Item[]>([emptyItem()]);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  const [emailFor, setEmailFor] = useState<any | null>(null);
+  const [emailOpen, setEmailOpen] = useState(false);
+  const [emailCandidates, setEmailCandidates] = useState<any[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [emailTo, setEmailTo] = useState("");
   const [emailSubject, setEmailSubject] = useState("");
-  const [emailBody, setEmailBody] = useState("");
+  const [emailIntro, setEmailIntro] = useState("");
+  const [emailOutro, setEmailOutro] = useState("");
   const [sending, setSending] = useState(false);
 
   const load = useCallback(async () => {
@@ -51,32 +59,45 @@ const Renewals = () => {
   }, [load]);
 
   useEffect(() => {
-    supabase.from("clients").select("id, business_name").order("business_name").then(({ data }) => setClients(data ?? []));
+    supabase.from("clients").select("id, business_name, email").order("business_name").then(({ data }) => setClients(data ?? []));
   }, []);
 
-  const openNew = () => { setEditingId(null); setForm(emptyForm); setOpen(true); };
+  const openNew = () => { setEditingId(null); setForm(emptyForm); setItems([emptyItem()]); setOpen(true); };
   const openEdit = (r: any) => {
     setEditingId(r.id);
     setForm({
-      client_id: r.client_id, type: r.type, label: r.label, vendor: r.vendor ?? "",
-      cost: r.cost ?? "", currency: r.currency ?? "INR", renews_on: r.renews_on,
+      client_id: r.client_id, currency: r.currency ?? "INR", renews_on: r.renews_on,
       status: r.status, notes: r.notes ?? "",
     });
+    setItems([{ type: r.type, label: r.label, vendor: r.vendor ?? "", cost: r.cost ?? "", renews_on: r.renews_on }]);
     setOpen(true);
   };
 
+  const updateItem = (i: number, patch: Partial<Item>) =>
+    setItems((prev) => prev.map((it, idx) => (idx === i ? { ...it, ...patch } : it)));
+
   const save = async () => {
-    if (!form.client_id || !form.label || !form.renews_on) return toast({ title: "Fill required fields", variant: "destructive" });
-    const payload = {
-      ...form,
-      cost: form.cost ? Number(form.cost) : null,
-    };
+    if (!form.client_id) return toast({ title: "Select a client", variant: "destructive" });
+    const prepared = items.map((it) => ({
+      client_id: form.client_id,
+      type: it.type,
+      label: it.label.trim(),
+      vendor: it.vendor || null,
+      cost: it.cost ? Number(it.cost) : null,
+      currency: form.currency,
+      renews_on: it.renews_on || form.renews_on,
+      status: form.status,
+      notes: form.notes || null,
+    }));
+    if (prepared.some((p) => !p.label || !p.renews_on))
+      return toast({ title: "Each item needs a label and renewal date", variant: "destructive" });
+
     const { error } = editingId
-      ? await supabase.from("renewals").update(payload).eq("id", editingId)
-      : await supabase.from("renewals").insert(payload);
+      ? await supabase.from("renewals").update(prepared[0]).eq("id", editingId)
+      : await supabase.from("renewals").insert(prepared);
     if (error) return toast({ title: "Failed", description: error.message, variant: "destructive" });
-    toast({ title: editingId ? "Renewal updated" : "Renewal added" });
-    setOpen(false); setEditingId(null); setForm(emptyForm);
+    toast({ title: editingId ? "Renewal updated" : `${prepared.length} renewal${prepared.length > 1 ? "s" : ""} added` });
+    setOpen(false); setEditingId(null); setForm(emptyForm); setItems([emptyItem()]);
     load();
   };
 
@@ -97,42 +118,69 @@ const Renewals = () => {
     load();
   };
 
+  const daysUntil = (d: string) => Math.ceil((new Date(d).getTime() - Date.now()) / 86400000);
+
   const openEmail = (r: any) => {
-    const days = Math.ceil((new Date(r.renews_on).getTime() - Date.now()) / 86400000);
-    const client = r.clients?.business_name || "there";
-    const label = r.label;
-    const dueTxt = days < 0 ? `${-days} day(s) overdue` : `in ${days} day(s) (${r.renews_on})`;
-    const cost = r.cost ? `${r.currency} ${Number(r.cost).toLocaleString()}` : "";
-    setEmailFor(r);
+    const clientRows = rows.filter((x) => x.client_id === r.client_id && x.status === "active");
+    setEmailCandidates(clientRows);
+    setSelectedIds([r.id]);
     setEmailTo(r.clients?.email ?? "");
-    setEmailSubject(`Renewal reminder: ${label} due ${dueTxt}`);
-    setEmailBody(
-`Hi ${client},
-
-This is a friendly reminder that your ${label}${r.vendor ? ` (${r.vendor})` : ""} is due for renewal ${dueTxt}.${cost ? `\n\nRenewal amount: ${cost}` : ""}
-
-Please let us know if you'd like us to proceed with the renewal, or reply to this email with any questions.
-
-Thanks,
-Webfluid Team`
-    );
+    setEmailSubject(`Upcoming renewals for ${r.clients?.business_name ?? "your account"}`);
+    setEmailIntro(`Hi ${r.clients?.business_name || "there"},\n\nThis is a friendly reminder about the following upcoming service renewals:`);
+    setEmailOutro(`Please let us know if you'd like us to proceed with the renewals, or reply to this email with any questions.\n\nThanks,\nWebfluid Team`);
+    setEmailOpen(true);
   };
+
+  const toggleSelected = (id: string) =>
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
   const sendEmail = async () => {
     if (!emailTo) return toast({ title: "Recipient required", variant: "destructive" });
+    const chosen = emailCandidates.filter((r) => selectedIds.includes(r.id));
+    if (chosen.length === 0) return toast({ title: "Select at least one item", variant: "destructive" });
     setSending(true);
     try {
-      const htmlBody = emailBody.split("\n").map((l) =>
-        `<p style="margin:0 0 10px 0">${l.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]!))}</p>`
-      ).join("");
+      const esc = (s: any) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+      const para = (t: string) => t.split("\n").map((l) => `<p style="margin:0 0 10px 0">${esc(l) || "&nbsp;"}</p>`).join("");
+
+      const total = chosen.reduce((s, r) => s + (Number(r.cost) || 0), 0);
+      const currency = chosen.find((r) => r.cost)?.currency ?? "INR";
+
+      const itemRows = chosen.map((r) => {
+        const d = daysUntil(r.renews_on);
+        const due = d < 0 ? `${-d} day(s) overdue` : `in ${d} day(s)`;
+        return `<tr>
+          <td style="padding:8px;border:1px solid #e5e7eb;">${esc(r.label)}<div style="font-size:12px;color:#6b7280;">${esc(String(r.type).replace(/_/g, " "))}${r.vendor ? ` · ${esc(r.vendor)}` : ""}</div></td>
+          <td style="padding:8px;border:1px solid #e5e7eb;">${esc(r.renews_on)}<div style="font-size:12px;color:${d < 0 ? "#dc2626" : "#6b7280"};">${due}</div></td>
+          <td style="padding:8px;border:1px solid #e5e7eb;text-align:right;">${r.cost ? `${esc(r.currency)} ${Number(r.cost).toLocaleString()}` : "—"}</td>
+        </tr>`;
+      }).join("");
+
+      const htmlBody = `
+        <div style="font-family:Arial,sans-serif;max-width:640px;margin:0 auto;color:#111827;">
+          ${para(emailIntro)}
+          <table style="border-collapse:collapse;width:100%;font-size:14px;margin:16px 0;">
+            <thead><tr style="background:#f9fafb;">
+              <th style="padding:8px;border:1px solid #e5e7eb;text-align:left;">Service</th>
+              <th style="padding:8px;border:1px solid #e5e7eb;text-align:left;">Renews on</th>
+              <th style="padding:8px;border:1px solid #e5e7eb;text-align:right;">Cost</th>
+            </tr></thead>
+            <tbody>${itemRows}</tbody>
+            ${total > 0 ? `<tfoot><tr><td colspan="2" style="padding:8px;border:1px solid #e5e7eb;text-align:right;font-weight:600;">Total</td><td style="padding:8px;border:1px solid #e5e7eb;text-align:right;font-weight:600;">${esc(currency)} ${total.toLocaleString()}</td></tr></tfoot>` : ""}
+          </table>
+          ${para(emailOutro)}
+        </div>`;
+
       const { data, error } = await supabase.functions.invoke("send-document-email", {
         body: { to: emailTo, subject: emailSubject, htmlBody },
       });
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
-      await supabase.from("renewals").update({ last_reminded_on: new Date().toISOString().slice(0, 10) }).eq("id", emailFor.id);
-      toast({ title: "Reminder sent" });
-      setEmailFor(null);
+      await supabase.from("renewals")
+        .update({ last_reminded_on: new Date().toISOString().slice(0, 10) })
+        .in("id", chosen.map((r) => r.id));
+      toast({ title: `Reminder sent for ${chosen.length} item(s)` });
+      setEmailOpen(false);
       load();
     } catch (e: any) {
       toast({ title: "Send failed", description: e.message ?? String(e), variant: "destructive" });
@@ -140,8 +188,6 @@ Webfluid Team`
       setSending(false);
     }
   };
-
-  const daysUntil = (d: string) => Math.ceil((new Date(d).getTime() - Date.now()) / 86400000);
 
   return (
     <div className="max-w-6xl space-y-4">
@@ -161,31 +207,28 @@ Webfluid Team`
         </div>
       </div>
 
-      <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) { setEditingId(null); setForm(emptyForm); } }}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader><DialogTitle>{editingId ? "Edit renewal" : "New renewal"}</DialogTitle></DialogHeader>
-          <div className="space-y-3">
-            <div><Label>Client *</Label>
-              <Select value={form.client_id} onValueChange={(v) => setForm({ ...form, client_id: v })}>
-                <SelectTrigger><SelectValue placeholder="Select client" /></SelectTrigger>
-                <SelectContent>{clients.map((c) => <SelectItem key={c.id} value={c.id}>{c.business_name}</SelectItem>)}</SelectContent>
-              </Select>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div><Label>Type</Label>
-                <Select value={form.type} onValueChange={(v) => setForm({ ...form, type: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {RENEWAL_TYPES.map((t) => <SelectItem key={t} value={t}>{t.replace(/_/g, " ")}</SelectItem>)}
-                  </SelectContent>
+      <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) { setEditingId(null); setForm(emptyForm); setItems([emptyItem()]); } }}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>{editingId ? "Edit renewal" : "New renewals"}</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="sm:col-span-2"><Label>Client *</Label>
+                <Select value={form.client_id} onValueChange={(v) => setForm({ ...form, client_id: v })}>
+                  <SelectTrigger><SelectValue placeholder="Select client" /></SelectTrigger>
+                  <SelectContent>{clients.map((c) => <SelectItem key={c.id} value={c.id}>{c.business_name}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
-              <div><Label>Label *</Label><Input value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} /></div>
-              <div><Label>Vendor</Label><Input value={form.vendor} onChange={(e) => setForm({ ...form, vendor: e.target.value })} /></div>
-              <div><Label>Cost</Label><Input type="number" step="0.01" value={form.cost} onChange={(e) => setForm({ ...form, cost: e.target.value })} /></div>
               <div><Label>Currency</Label><Input value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })} /></div>
-              <div><Label>Renews on *</Label><Input type="date" value={form.renews_on} onChange={(e) => setForm({ ...form, renews_on: e.target.value })} /></div>
-              
+              {!editingId && (
+                <div className="sm:col-span-2">
+                  <Label>Default renewal date</Label>
+                  <Input type="date" value={form.renews_on} onChange={(e) => {
+                    const v = e.target.value;
+                    setForm({ ...form, renews_on: v });
+                    setItems((prev) => prev.map((it) => (it.renews_on ? it : { ...it, renews_on: v })));
+                  }} />
+                </div>
+              )}
               <div><Label>Status</Label>
                 <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
@@ -195,8 +238,42 @@ Webfluid Team`
                 </Select>
               </div>
             </div>
+
+            <div className="space-y-3">
+              <Label>{editingId ? "Item" : "Items"}</Label>
+              {items.map((it, i) => (
+                <div key={i} className="rounded-md border p-3 grid gap-3 sm:grid-cols-2 relative">
+                  {!editingId && items.length > 1 && (
+                    <button type="button" onClick={() => setItems(items.filter((_, idx) => idx !== i))}
+                      className="absolute right-2 top-2 text-muted-foreground hover:text-destructive">
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                  <div><Label className="text-xs">Type</Label>
+                    <Select value={it.type} onValueChange={(v) => updateItem(i, { type: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {RENEWAL_TYPES.map((t) => <SelectItem key={t} value={t}>{t.replace(/_/g, " ")}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div><Label className="text-xs">Label *</Label><Input value={it.label} onChange={(e) => updateItem(i, { label: e.target.value })} /></div>
+                  <div><Label className="text-xs">Vendor</Label><Input value={it.vendor} onChange={(e) => updateItem(i, { vendor: e.target.value })} /></div>
+                  <div><Label className="text-xs">Cost</Label><Input type="number" step="0.01" value={it.cost} onChange={(e) => updateItem(i, { cost: e.target.value })} /></div>
+                  <div className="sm:col-span-2"><Label className="text-xs">Renews on *</Label>
+                    <Input type="date" value={it.renews_on} onChange={(e) => updateItem(i, { renews_on: e.target.value })} />
+                  </div>
+                </div>
+              ))}
+              {!editingId && (
+                <Button type="button" variant="outline" size="sm" onClick={() => setItems([...items, emptyItem(form.renews_on)])}>
+                  <Plus className="w-4 h-4 mr-2" /> Add another item
+                </Button>
+              )}
+            </div>
+
             <div><Label>Notes</Label><Textarea rows={2} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></div>
-            <Button onClick={save} className="w-full">{editingId ? "Save changes" : "Create"}</Button>
+            <Button onClick={save} className="w-full">{editingId ? "Save changes" : `Create ${items.length} renewal${items.length > 1 ? "s" : ""}`}</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -257,16 +334,37 @@ Webfluid Team`
         </AlertDialogContent>
       </AlertDialog>
 
-      <Dialog open={!!emailFor} onOpenChange={(o) => !o && setEmailFor(null)}>
-        <DialogContent className="max-w-2xl">
+      <Dialog open={emailOpen} onOpenChange={(o) => !o && setEmailOpen(false)}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader><DialogTitle>Email renewal reminder</DialogTitle></DialogHeader>
           <div className="space-y-3">
             <div><Label>To</Label><Input value={emailTo} onChange={(e) => setEmailTo(e.target.value)} /></div>
             <div><Label>Subject</Label><Input value={emailSubject} onChange={(e) => setEmailSubject(e.target.value)} /></div>
-            <div><Label>Message</Label><Textarea rows={10} value={emailBody} onChange={(e) => setEmailBody(e.target.value)} /></div>
+            <div>
+              <Label>Include renewals</Label>
+              <div className="mt-2 space-y-2 rounded-md border p-3">
+                {emailCandidates.map((r) => {
+                  const d = daysUntil(r.renews_on);
+                  return (
+                    <label key={r.id} className="flex items-center gap-3 text-sm cursor-pointer">
+                      <Checkbox checked={selectedIds.includes(r.id)} onCheckedChange={() => toggleSelected(r.id)} />
+                      <span className="flex-1">
+                        {r.label} <span className="text-xs text-muted-foreground">({r.type.replace(/_/g, " ")})</span>
+                      </span>
+                      <span className={`text-xs ${d <= 30 ? "text-destructive" : "text-muted-foreground"}`}>
+                        {r.renews_on} · {d < 0 ? `${-d}d overdue` : `${d}d`}
+                      </span>
+                      <span className="text-xs w-24 text-right">{r.cost ? `${r.currency} ${Number(r.cost).toLocaleString()}` : "—"}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+            <div><Label>Intro message</Label><Textarea rows={4} value={emailIntro} onChange={(e) => setEmailIntro(e.target.value)} /></div>
+            <div><Label>Closing message</Label><Textarea rows={4} value={emailOutro} onChange={(e) => setEmailOutro(e.target.value)} /></div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEmailFor(null)} disabled={sending}>Cancel</Button>
+            <Button variant="outline" onClick={() => setEmailOpen(false)} disabled={sending}>Cancel</Button>
             <Button onClick={sendEmail} disabled={sending} className="gradient-bg">
               {sending && <Loader2 className="w-4 h-4 mr-1 animate-spin" />}Send reminder
             </Button>
