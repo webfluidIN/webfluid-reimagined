@@ -320,7 +320,9 @@ const Renewals = () => {
                       <td className="py-3 px-2 text-xs">{r.cost ? `${r.currency} ${Number(r.cost).toLocaleString()}` : "—"}</td>
                       <td className="py-3 px-2"><StatusBadge status={r.status} /></td>
                       <td className="py-3 px-2 text-right whitespace-nowrap">
-                        <Button size="sm" variant="ghost" onClick={() => openEmail(r)} title="Email client"><Mail className="w-4 h-4" /></Button>
+                        <Button size="sm" variant="ghost" onClick={() => openEmail(r, "reminder")} title="Email renewal reminder"><Mail className="w-4 h-4" /></Button>
+                        <Button size="sm" variant="ghost" onClick={() => openEmail(r, "thankyou")} title="Send thank-you / renewal confirmation"><BadgeCheck className="w-4 h-4 text-primary" /></Button>
+
                         <Button size="sm" variant="ghost" onClick={() => markRenewed(r)} title="Mark renewed"><RefreshCw className="w-4 h-4" /></Button>
                         <Button size="sm" variant="ghost" onClick={() => openEdit(r)} title="Edit"><Pencil className="w-4 h-4" /></Button>
                         <Button size="sm" variant="ghost" onClick={() => setDeleteId(r.id)} title="Delete"><Trash2 className="w-4 h-4 text-destructive" /></Button>
