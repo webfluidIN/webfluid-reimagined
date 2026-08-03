@@ -45,6 +45,8 @@ const Renewals = () => {
   const [emailCandidates, setEmailCandidates] = useState<any[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [emailTo, setEmailTo] = useState("");
+  const [emailCc, setEmailCc] = useState("");
+
   const [emailSubject, setEmailSubject] = useState("");
   const [emailIntro, setEmailIntro] = useState("");
   const [emailOutro, setEmailOutro] = useState("");
