@@ -358,6 +358,8 @@ const Renewals = () => {
           <DialogHeader><DialogTitle>{emailMode === "thankyou" ? "Send renewal confirmation" : "Email renewal reminder"}</DialogTitle></DialogHeader>
           <div className="space-y-3">
             <div><Label>To</Label><Input value={emailTo} onChange={(e) => setEmailTo(e.target.value)} /></div>
+            <div><Label>CC</Label><Input placeholder="info@webfluid.in" value={emailCc} onChange={(e) => setEmailCc(e.target.value)} /></div>
+
             <div><Label>Subject</Label><Input value={emailSubject} onChange={(e) => setEmailSubject(e.target.value)} /></div>
             <div>
               <Label>Include renewals</Label>
