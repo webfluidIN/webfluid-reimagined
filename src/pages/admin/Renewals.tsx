@@ -186,7 +186,7 @@ const Renewals = () => {
       });
 
       const { data, error } = await supabase.functions.invoke("send-document-email", {
-        body: { to: emailTo, subject: emailSubject, htmlBody },
+        body: { to: emailTo, cc: emailCc.trim() || undefined, subject: emailSubject, htmlBody },
       });
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
