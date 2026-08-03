@@ -45,6 +45,8 @@ const Renewals = () => {
   const [emailCandidates, setEmailCandidates] = useState<any[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [emailTo, setEmailTo] = useState("");
+  const [emailCc, setEmailCc] = useState("");
+
   const [emailSubject, setEmailSubject] = useState("");
   const [emailIntro, setEmailIntro] = useState("");
   const [emailOutro, setEmailOutro] = useState("");
@@ -134,6 +136,8 @@ const Renewals = () => {
     setEmailCandidates(clientRows);
     setSelectedIds([r.id]);
     setEmailTo(r.clients?.email ?? "");
+    setEmailCc(brand.settings?.renewal_cc_enabled === false ? "" : (brand.settings?.renewal_cc_email ?? "info@webfluid.in"));
+
     if (mode === "thankyou") {
       const s = brand.settings ?? {};
       setEmailSubject(
@@ -182,7 +186,7 @@ const Renewals = () => {
       });
 
       const { data, error } = await supabase.functions.invoke("send-document-email", {
-        body: { to: emailTo, subject: emailSubject, htmlBody },
+        body: { to: emailTo, cc: emailCc.trim() || undefined, subject: emailSubject, htmlBody },
       });
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
@@ -354,6 +358,8 @@ const Renewals = () => {
           <DialogHeader><DialogTitle>{emailMode === "thankyou" ? "Send renewal confirmation" : "Email renewal reminder"}</DialogTitle></DialogHeader>
           <div className="space-y-3">
             <div><Label>To</Label><Input value={emailTo} onChange={(e) => setEmailTo(e.target.value)} /></div>
+            <div><Label>CC</Label><Input placeholder="info@webfluid.in" value={emailCc} onChange={(e) => setEmailCc(e.target.value)} /></div>
+
             <div><Label>Subject</Label><Input value={emailSubject} onChange={(e) => setEmailSubject(e.target.value)} /></div>
             <div>
               <Label>Include renewals</Label>

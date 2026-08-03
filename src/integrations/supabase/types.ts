@@ -83,6 +83,8 @@ export type Database = {
           quote_email_body: string
           quote_email_subject: string
           quote_template: string
+          renewal_cc_email: string
+          renewal_cc_enabled: boolean
           renewal_notify_days: number[]
           renewal_notify_email: string | null
           renewal_notify_enabled: boolean
@@ -119,6 +121,8 @@ export type Database = {
           quote_email_body?: string
           quote_email_subject?: string
           quote_template?: string
+          renewal_cc_email?: string
+          renewal_cc_enabled?: boolean
           renewal_notify_days?: number[]
           renewal_notify_email?: string | null
           renewal_notify_enabled?: boolean
@@ -155,6 +159,8 @@ export type Database = {
           quote_email_body?: string
           quote_email_subject?: string
           quote_template?: string
+          renewal_cc_email?: string
+          renewal_cc_enabled?: boolean
           renewal_notify_days?: number[]
           renewal_notify_email?: string | null
           renewal_notify_enabled?: boolean

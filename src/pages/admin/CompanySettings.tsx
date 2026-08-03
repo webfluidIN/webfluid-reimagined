@@ -198,6 +198,21 @@ const CompanySettings = () => {
             <p className="text-xs text-muted-foreground">The reminder runs once a day at 08:00 UTC. Each item is emailed at most once per day.</p>
 
             <div className="border-t pt-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-semibold">CC on renewal emails to clients</div>
+                  <div className="text-xs text-muted-foreground">Automatically CC this address on reminder and confirmation emails.</div>
+                </div>
+                <label className="inline-flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" className="h-5 w-5 accent-primary" checked={s.renewal_cc_enabled ?? true} onChange={(e) => set("renewal_cc_enabled", e.target.checked)} />
+                  <span className="text-sm">{s.renewal_cc_enabled === false ? "Off" : "On"}</span>
+                </label>
+              </div>
+              <div><Label>Default CC email</Label><Input placeholder="info@webfluid.in" value={s.renewal_cc_email ?? ""} onChange={(e) => set("renewal_cc_email", e.target.value)} /></div>
+            </div>
+
+
+            <div className="border-t pt-4 space-y-3">
               <div className="font-semibold">Renewal thank-you / confirmation email</div>
               <p className="text-xs text-muted-foreground">Sent manually to a client after their services are renewed.</p>
               <div><Label className="text-xs">Subject</Label><Input value={s.renewal_thankyou_subject ?? ""} onChange={(e) => set("renewal_thankyou_subject", e.target.value)} /></div>
