@@ -136,6 +136,8 @@ const Renewals = () => {
     setEmailCandidates(clientRows);
     setSelectedIds([r.id]);
     setEmailTo(r.clients?.email ?? "");
+    setEmailCc(brand.settings?.renewal_cc_enabled === false ? "" : (brand.settings?.renewal_cc_email ?? "info@webfluid.in"));
+
     if (mode === "thankyou") {
       const s = brand.settings ?? {};
       setEmailSubject(
