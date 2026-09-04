@@ -446,16 +446,16 @@ const Renewals = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      {emailOpen && attachPdf && brand.settings?.company_name && emailClient && (
-        <div style={{ position: "fixed", left: "-10000px", top: 0, width: "800px" }} aria-hidden>
+      {emailOpen && attachPdf && (
+        <div style={{ position: "fixed", left: "-10000px", top: 0, width: "800px", background: "#fff" }} aria-hidden>
           <div ref={pdfRef}>
             <DocumentTemplate
               template={(brand.settings?.invoice_template ?? "classic") as any}
-              settings={brand.settings}
+              settings={brand.settings ?? { company_name: "Webfluid", primary_color: "#1E5FAD" }}
               logoUrl={brand.logoUrl}
               invoice={pdfDoc}
               items={pdfItems}
-              client={emailClient}
+              client={emailClient ?? pdfClientFallback}
               labelOverride={emailMode === "thankyou" ? "RENEWAL CONFIRMATION" : "RENEWAL NOTICE"}
             />
           </div>
