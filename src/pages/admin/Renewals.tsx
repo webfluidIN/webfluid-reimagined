@@ -193,12 +193,13 @@ const Renewals = () => {
 
       let pdfBase64: string | undefined;
       let pdfFilename: string | undefined;
-      if (attachPdf && pdfRef.current) {
+      if (attachPdf) {
+        if (!pdfRef.current) throw new Error("PDF preview not ready — try again in a moment");
         const html2pdf = (await import("html2pdf.js")).default as any;
         const blob: Blob = await html2pdf().set({
           margin: 10,
           image: { type: "jpeg", quality: 0.95 },
-          html2canvas: { scale: 2, useCORS: true, allowTaint: true },
+          html2canvas: { scale: 2, useCORS: true, allowTaint: true, backgroundColor: "#ffffff" },
           jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
         }).from(pdfRef.current).outputPdf("blob");
         pdfBase64 = await new Promise<string>((resolve, reject) => {
@@ -207,8 +208,10 @@ const Renewals = () => {
           fr.onerror = reject;
           fr.readAsDataURL(blob);
         });
+        if (!pdfBase64) throw new Error("Could not generate the PDF attachment");
         pdfFilename = `${pdfDoc.invoice_number}.pdf`;
       }
+
 
       const { data, error } = await supabase.functions.invoke("send-document-email", {
         body: { to: emailTo, cc: emailCc.trim() || undefined, subject: emailSubject, htmlBody, pdfBase64, pdfFilename },
@@ -232,6 +235,7 @@ const Renewals = () => {
 
 
   const pdfChosen = emailCandidates.filter((r) => selectedIds.includes(r.id));
+  const pdfClientFallback = emailCandidates[0]?.clients ?? { full_name: "", business_name: "", email: emailTo };
   const pdfItems = pdfChosen.map((r) => ({
     id: r.id,
     description: `${r.label}${r.vendor ? ` — ${r.vendor}` : ""} (${String(r.type).replace(/_/g, " ")}) · renews ${r.renews_on}`,
@@ -446,16 +450,16 @@ const Renewals = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      {emailOpen && attachPdf && brand.settings?.company_name && emailClient && (
-        <div style={{ position: "fixed", left: "-10000px", top: 0, width: "800px" }} aria-hidden>
+      {emailOpen && attachPdf && (
+        <div style={{ position: "fixed", left: "-10000px", top: 0, width: "800px", background: "#fff" }} aria-hidden>
           <div ref={pdfRef}>
             <DocumentTemplate
               template={(brand.settings?.invoice_template ?? "classic") as any}
-              settings={brand.settings}
+              settings={brand.settings ?? { company_name: "Webfluid", primary_color: "#1E5FAD" }}
               logoUrl={brand.logoUrl}
               invoice={pdfDoc}
               items={pdfItems}
-              client={emailClient}
+              client={emailClient ?? pdfClientFallback}
               labelOverride={emailMode === "thankyou" ? "RENEWAL CONFIRMATION" : "RENEWAL NOTICE"}
             />
           </div>
