@@ -7,13 +7,14 @@ interface Props {
   invoice: any;
   items: any[];
   client: any;
+  labelOverride?: string;
 }
 
 const money = (n: any) => Number(n || 0).toFixed(2);
 
-export function DocumentTemplate({ template, settings, logoUrl, invoice, items, client }: Props) {
+export function DocumentTemplate({ template, settings, logoUrl, invoice, items, client, labelOverride }: Props) {
   const isQuote = invoice.document_type === "quote";
-  const docLabel = isQuote ? "QUOTATION" : "INVOICE";
+  const docLabel = labelOverride ?? (isQuote ? "QUOTATION" : "INVOICE");
   const primary = settings.primary_color || "#1E5FAD";
 
   const CompanyBlock = (
