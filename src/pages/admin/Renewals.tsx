@@ -232,6 +232,7 @@ const Renewals = () => {
 
 
   const pdfChosen = emailCandidates.filter((r) => selectedIds.includes(r.id));
+  const pdfClientFallback = emailCandidates[0]?.clients ?? { full_name: "", business_name: "", email: emailTo };
   const pdfItems = pdfChosen.map((r) => ({
     id: r.id,
     description: `${r.label}${r.vendor ? ` — ${r.vendor}` : ""} (${String(r.type).replace(/_/g, " ")}) · renews ${r.renews_on}`,
