@@ -193,12 +193,13 @@ const Renewals = () => {
 
       let pdfBase64: string | undefined;
       let pdfFilename: string | undefined;
-      if (attachPdf && pdfRef.current) {
+      if (attachPdf) {
+        if (!pdfRef.current) throw new Error("PDF preview not ready — try again in a moment");
         const html2pdf = (await import("html2pdf.js")).default as any;
         const blob: Blob = await html2pdf().set({
           margin: 10,
           image: { type: "jpeg", quality: 0.95 },
-          html2canvas: { scale: 2, useCORS: true, allowTaint: true },
+          html2canvas: { scale: 2, useCORS: true, allowTaint: true, backgroundColor: "#ffffff" },
           jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
         }).from(pdfRef.current).outputPdf("blob");
         pdfBase64 = await new Promise<string>((resolve, reject) => {
@@ -207,8 +208,10 @@ const Renewals = () => {
           fr.onerror = reject;
           fr.readAsDataURL(blob);
         });
+        if (!pdfBase64) throw new Error("Could not generate the PDF attachment");
         pdfFilename = `${pdfDoc.invoice_number}.pdf`;
       }
+
 
       const { data, error } = await supabase.functions.invoke("send-document-email", {
         body: { to: emailTo, cc: emailCc.trim() || undefined, subject: emailSubject, htmlBody, pdfBase64, pdfFilename },
