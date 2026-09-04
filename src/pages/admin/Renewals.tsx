@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import { DocumentTemplate } from "@/components/admin/DocumentTemplate";
 import { useToast } from "@/hooks/use-toast";
 import { brandedEmail, loadBrand, para, renewalTable } from "@/lib/brandEmail";
 import { renderTemplate } from "@/lib/companySettings";
@@ -45,6 +46,9 @@ const Renewals = () => {
   const [emailCandidates, setEmailCandidates] = useState<any[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [emailTo, setEmailTo] = useState("");
+  const [attachPdf, setAttachPdf] = useState(true);
+  const [emailClient, setEmailClient] = useState<any>(null);
+  const pdfRef = useRef<HTMLDivElement>(null);
   const [emailCc, setEmailCc] = useState("");
 
   const [emailSubject, setEmailSubject] = useState("");
@@ -136,6 +140,8 @@ const Renewals = () => {
     setEmailCandidates(clientRows);
     setSelectedIds([r.id]);
     setEmailTo(r.clients?.email ?? "");
+    setEmailClient(null);
+    supabase.from("clients").select("*").eq("id", r.client_id).maybeSingle().then(({ data }) => setEmailClient(data));
     setEmailCc(brand.settings?.renewal_cc_enabled === false ? "" : (brand.settings?.renewal_cc_email ?? "info@webfluid.in"));
 
     if (mode === "thankyou") {
@@ -185,8 +191,27 @@ const Renewals = () => {
         preheader: isThanks ? "Your renewal is confirmed" : "Upcoming service renewals",
       });
 
+      let pdfBase64: string | undefined;
+      let pdfFilename: string | undefined;
+      if (attachPdf && pdfRef.current) {
+        const html2pdf = (await import("html2pdf.js")).default as any;
+        const blob: Blob = await html2pdf().set({
+          margin: 10,
+          image: { type: "jpeg", quality: 0.95 },
+          html2canvas: { scale: 2, useCORS: true, allowTaint: true },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        }).from(pdfRef.current).outputPdf("blob");
+        pdfBase64 = await new Promise<string>((resolve, reject) => {
+          const fr = new FileReader();
+          fr.onloadend = () => resolve((fr.result as string).split(",")[1]);
+          fr.onerror = reject;
+          fr.readAsDataURL(blob);
+        });
+        pdfFilename = `${pdfDoc.invoice_number}.pdf`;
+      }
+
       const { data, error } = await supabase.functions.invoke("send-document-email", {
-        body: { to: emailTo, cc: emailCc.trim() || undefined, subject: emailSubject, htmlBody },
+        body: { to: emailTo, cc: emailCc.trim() || undefined, subject: emailSubject, htmlBody, pdfBase64, pdfFilename },
       });
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
@@ -205,6 +230,30 @@ const Renewals = () => {
     }
   };
 
+
+  const pdfChosen = emailCandidates.filter((r) => selectedIds.includes(r.id));
+  const pdfItems = pdfChosen.map((r) => ({
+    id: r.id,
+    description: `${r.label}${r.vendor ? ` — ${r.vendor}` : ""} (${String(r.type).replace(/_/g, " ")}) · renews ${r.renews_on}`,
+    quantity: 1,
+    unit_price: Number(r.cost || 0),
+    amount: Number(r.cost || 0),
+  }));
+  const pdfTotal = pdfItems.reduce((sum, it) => sum + it.amount, 0);
+  const pdfDate = new Date().toISOString().slice(0, 10);
+  const pdfDoc = {
+    document_type: "invoice",
+    invoice_number: `REN-${pdfDate.replace(/-/g, "")}`,
+    issue_date: pdfDate,
+    due_date: pdfChosen.map((r) => r.renews_on).sort()[0] ?? null,
+    currency: pdfChosen[0]?.currency ?? "INR",
+    subtotal: pdfTotal,
+    tax_percent: 0,
+    tax_amount: 0,
+    discount: 0,
+    total: pdfTotal,
+    notes: emailMode === "thankyou" ? "Thank you — the services listed above have been renewed." : "Please confirm if you would like us to proceed with these renewals.",
+  };
 
   return (
     <div className="max-w-6xl space-y-4">
@@ -383,6 +432,10 @@ const Renewals = () => {
             </div>
             <div><Label>Intro message</Label><Textarea rows={4} value={emailIntro} onChange={(e) => setEmailIntro(e.target.value)} /></div>
             <div><Label>Closing message</Label><Textarea rows={4} value={emailOutro} onChange={(e) => setEmailOutro(e.target.value)} /></div>
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <Checkbox checked={attachPdf} onCheckedChange={(v) => setAttachPdf(!!v)} />
+              Attach a PDF summary using our document template
+            </label>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEmailOpen(false)} disabled={sending}>Cancel</Button>
@@ -393,6 +446,21 @@ const Renewals = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {emailOpen && attachPdf && brand.settings?.company_name && emailClient && (
+        <div style={{ position: "fixed", left: "-10000px", top: 0, width: "800px" }} aria-hidden>
+          <div ref={pdfRef}>
+            <DocumentTemplate
+              template={(brand.settings?.invoice_template ?? "classic") as any}
+              settings={brand.settings}
+              logoUrl={brand.logoUrl}
+              invoice={pdfDoc}
+              items={pdfItems}
+              client={emailClient}
+              labelOverride={emailMode === "thankyou" ? "RENEWAL CONFIRMATION" : "RENEWAL NOTICE"}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
