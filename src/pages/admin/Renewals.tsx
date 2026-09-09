@@ -441,7 +441,7 @@ const Renewals = () => {
             <div><Label>Closing message</Label><Textarea rows={4} value={emailOutro} onChange={(e) => setEmailOutro(e.target.value)} /></div>
             <label className="flex items-center gap-2 text-sm cursor-pointer">
               <Checkbox checked={attachPdf} onCheckedChange={(v) => setAttachPdf(!!v)} />
-              Attach a PDF summary using our document template
+              {emailMode === "thankyou" ? "Attach a payment receipt PDF" : "Attach a PDF summary using our document template"}
             </label>
           </div>
           <DialogFooter>
