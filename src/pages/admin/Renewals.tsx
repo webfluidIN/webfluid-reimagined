@@ -238,25 +238,28 @@ const Renewals = () => {
   const pdfClientFallback = emailCandidates[0]?.clients ?? { full_name: "", business_name: "", email: emailTo };
   const pdfItems = pdfChosen.map((r) => ({
     id: r.id,
-    description: `${r.label}${r.vendor ? ` — ${r.vendor}` : ""} (${String(r.type).replace(/_/g, " ")}) · renews ${r.renews_on}`,
+    description: `${r.label}${r.vendor ? ` — ${r.vendor}` : ""} (${String(r.type).replace(/_/g, " ")}) · ${emailMode === "thankyou" ? "valid until" : "renews"} ${r.renews_on}`,
     quantity: 1,
     unit_price: Number(r.cost || 0),
     amount: Number(r.cost || 0),
   }));
   const pdfTotal = pdfItems.reduce((sum, it) => sum + it.amount, 0);
   const pdfDate = new Date().toISOString().slice(0, 10);
+  const isReceipt = emailMode === "thankyou";
   const pdfDoc = {
     document_type: "invoice",
-    invoice_number: `REN-${pdfDate.replace(/-/g, "")}`,
+    invoice_number: `${isReceipt ? "RCPT" : "REN"}-${pdfDate.replace(/-/g, "")}`,
     issue_date: pdfDate,
-    due_date: pdfChosen.map((r) => r.renews_on).sort()[0] ?? null,
+    due_date: isReceipt ? null : pdfChosen.map((r) => r.renews_on).sort()[0] ?? null,
     currency: pdfChosen[0]?.currency ?? "INR",
     subtotal: pdfTotal,
     tax_percent: 0,
     tax_amount: 0,
     discount: 0,
     total: pdfTotal,
-    notes: emailMode === "thankyou" ? "Thank you — the services listed above have been renewed." : "Please confirm if you would like us to proceed with these renewals.",
+    notes: isReceipt
+      ? "Payment received — thank you. The services listed above have been renewed and are valid until the dates shown. This document serves as your payment receipt."
+      : "Please confirm if you would like us to proceed with these renewals.",
   };
 
   return (
@@ -460,7 +463,7 @@ const Renewals = () => {
               invoice={pdfDoc}
               items={pdfItems}
               client={emailClient ?? pdfClientFallback}
-              labelOverride={emailMode === "thankyou" ? "RENEWAL CONFIRMATION" : "RENEWAL NOTICE"}
+              labelOverride={emailMode === "thankyou" ? "PAYMENT RECEIPT" : "RENEWAL NOTICE"}
             />
           </div>
         </div>
